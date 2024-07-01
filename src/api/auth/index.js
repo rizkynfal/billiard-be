@@ -9,7 +9,7 @@ const { apiConstants } = require("../../utils/index");
 const TokenGenerator = require("./jwt_token");
 const passport = require("passport");
 
-
+// s
 class Auth {
   constructor() {}
   async register(req, res) {
