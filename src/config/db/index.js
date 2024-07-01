@@ -24,6 +24,7 @@ class DB {
       database: this.database,
       password: this.password,
       port: this.port,
+      ssl: true,
     });
   }
   async connect() {
