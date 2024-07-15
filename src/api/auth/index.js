@@ -39,14 +39,6 @@ class Auth {
     try {
       const tokenGenerator = new TokenGenerator({ email: user[0].email });
       var response = await tokenGenerator.getAuthToken();
-
-      
-      // passport.serializeUser((user, done) => {
-      //   done(null, false);
-      // });
-      // passport.deserializeUser((user, done) => {
-      //   done(null, user);
-      // });
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);

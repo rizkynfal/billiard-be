@@ -15,12 +15,11 @@ const cors = require("cors");
 class App {
   static listen() {
     Promise.all([db.connect()]).then(() => {
-      app.use(cors());
       app.use(express.static(path.join(__dirname, "/src/public")));
       app.use(express.json());
       app.use(bodyParser.urlencoded({ extended: false }));
       app.use(bodyParser.json());
-
+      app.use(cors());
       app.use(
         session({
           secret: apiConstants.TOKEN_SECRET.ACCESS_TOKEN,
