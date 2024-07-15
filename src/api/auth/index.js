@@ -8,7 +8,6 @@ const { ErrorHandler } = require("../../handler/error");
 const { apiConstants } = require("../../utils/index");
 const TokenGenerator = require("./jwt_token");
 const passport = require("passport");
-
 // s
 class Auth {
   constructor() {}
@@ -21,7 +20,7 @@ class Auth {
       try {
         return await commandHandler.createUser(req.body);
       } catch (error) {
-        throw new ErrorHandler.ServerError();
+        throw new ErrorHandler.ServerError(error);
       }
     }
   }

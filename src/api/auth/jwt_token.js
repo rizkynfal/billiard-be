@@ -7,6 +7,7 @@ class TokenGenerator {
   async generateAccessToken() {
     return jwt.sign(this.user, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, {
       expiresIn: "1h",
+      header: { kid: "sim1" },
     });
   }
   async generateRefreshToken() {

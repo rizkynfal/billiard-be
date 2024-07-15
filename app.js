@@ -9,13 +9,18 @@ const passport = require("passport");
 const session = require("express-session");
 const { apiConstants } = require("./src/utils");
 const db = new DB();
+const path = require("path");
 require("express-session");
-
+const cors = require("cors");
 class App {
   static listen() {
     Promise.all([db.connect()]).then(() => {
+      app.use(cors());
+      app.use(express.static(path.join(__dirname, "/src/public")));
+      app.use(express.json());
       app.use(bodyParser.urlencoded({ extended: false }));
       app.use(bodyParser.json());
+
       app.use(
         session({
           secret: apiConstants.TOKEN_SECRET.ACCESS_TOKEN,
@@ -23,6 +28,7 @@ class App {
           resave: true,
         })
       );
+
       app.use(passport.initialize());
       app.use(passport.session());
       app.listen(port, (err) => {
