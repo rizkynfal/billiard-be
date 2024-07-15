@@ -36,9 +36,11 @@ class TransaksiCommandHandler {
     if (!user) {
       throw new ErrorHandler.ForbiddenError();
     }
+    const hashedId = Math.random().toString(20).substring(2);
+    const transaksiId = "Transaksi_id-" + hashedId;
     try {
       const midtrans = new MidtransClient(
-        "tes-transaksi-9",
+        transaksiId,
         price,
         "gopay",
         user[0],

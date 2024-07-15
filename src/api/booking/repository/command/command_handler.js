@@ -27,16 +27,18 @@ class BookingCommandHandler {
       throw new ErrorHandler.ForbiddenError();
     }
     try {
+      const hashedId = Math.random().toString(20).substring(2);
+      const orderId = "Order_Id-" + hashedId;
       const sql = {
         text: `INSERT INTO booking_tb (booking_id, total_lama_sewa, user_id, product_id, tanggal_booking) VALUES ($1, $2, $3, $4, $5)`,
-        values: [order_id, lamaSewa, userId, produkId, tanggalBooking],
+        values: [orderId, lamaSewa, userId, produkId, tanggalBooking],
       };
       const command = new BookingCommand(this.db.db, sql);
       await command.create();
 
       return {
         res: {
-          orderId: order_id,
+          orderId: orderId,
           lamaSewa: lamaSewa,
           userId: userId,
           produkId: produkId,

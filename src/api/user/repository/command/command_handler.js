@@ -14,11 +14,12 @@ class UserCommandHandler {
     if (error) {
       throw new errorHandler.BadRequestError(error);
     } else {
+      const hashedId = Math.random().toString(20).substring(2);
       const hashedPassword = await bcrypt.hash(body.password, 10);
       const query = {
         text: "INSERT INTO user_tb(user_id,nama,email,no_hp,password,role) VALUES($1, $2, $3, $4, $5, $6)",
         values: [
-          body.user_id,
+          "User-" + hashedId,
           body.nama,
           body.email,
           body.noHp,
