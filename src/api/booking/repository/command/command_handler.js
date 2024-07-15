@@ -28,7 +28,7 @@ class BookingCommandHandler {
     }
     try {
       const hashedId = Math.random().toString(20).substring(2);
-      const orderId = "Order_Id-" + hashedId;
+      const orderId = "BK-" + hashedId;
       const sql = {
         text: `INSERT INTO booking_tb (booking_id, total_lama_sewa, user_id, product_id, tanggal_booking) VALUES ($1, $2, $3, $4, $5)`,
         values: [orderId, lamaSewa, userId, produkId, tanggalBooking],

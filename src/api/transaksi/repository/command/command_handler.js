@@ -36,8 +36,8 @@ class TransaksiCommandHandler {
     if (!user) {
       throw new ErrorHandler.ForbiddenError();
     }
-    const hashedId = Math.random().toString(20).substring(2);
-    const transaksiId = "Transaksi_id-" + hashedId;
+    const hashedId = Math.random().toString(40).substring(2);
+    const transaksiId = "TR-" + hashedId;
     try {
       const midtrans = new MidtransClient(
         transaksiId,

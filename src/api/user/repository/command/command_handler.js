@@ -19,7 +19,7 @@ class UserCommandHandler {
       const query = {
         text: "INSERT INTO user_tb(user_id,nama,email,no_hp,password,role) VALUES($1, $2, $3, $4, $5, $6)",
         values: [
-          "User-" + hashedId,
+          "USR-" + hashedId,
           body.nama,
           body.email,
           body.noHp,

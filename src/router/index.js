@@ -5,6 +5,8 @@ const { routing } = require("../middleware/routing");
 const passport = require("passport");
 const { util } = require("../utils");
 const cors = require("cors");
+const date = require('date-and-time') 
+
 module.exports = (app) => {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
@@ -20,7 +22,9 @@ module.exports = (app) => {
   });
 
   app.get("/", (req, res) => {
-    res.send("<h1>404 NOT FOUND</h1>");
+    const id = "TR-"+ Math.random().toString().substring(10) +"-"+  date.format((new Date(Date.now())),"DD-MM-YYYY")
+    res.send(`"<h1>404 NOT FOUND</h1>" ${id} ++++ ${id.length}`);
+
   });
   app.get("/api", async (req, res) => {
     try {
