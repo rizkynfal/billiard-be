@@ -11,17 +11,23 @@ module.exports = (app) => {
   app.post("/v1/auth/login", async (req, res, next) => {
     try {
       var response = await auth.login(req, res);
-
-      util.response(res, response, "Success", 200, true);
+      util.response(res, response, "Login Successfully", 200, true);
     } catch (error) {
       util.handleError(req, res, error);
     }
   });
+
   app.post("/v1/auth/register", async (req, res) => {
     try {
       var response = await auth.register(req, res);
 
-      util.response(res, response, "Registrasi Success", 200, true);
+      util.response(
+        res,
+        response,
+        "Registrasi Success",
+        apiConstants.RESPONSE_CODES.CREATED,
+        true
+      );
     } catch (error) {
       util.handleError(req, res, error);
     }

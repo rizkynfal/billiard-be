@@ -8,7 +8,7 @@ class BookingQuery {
   async getBooking() {
     try {
       const res = await this.db.query(this.sql);
-      return res.rows;
+      return res;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }

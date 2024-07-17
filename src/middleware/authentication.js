@@ -1,9 +1,8 @@
 const { ErrorHandler } = require("../handler/error");
 const { apiConstants, util } = require("../utils");
 const jwt = require("jsonwebtoken");
-
 require("express-session");
-exports.isAuthentication = (req, res, next, app) => {};
+
 exports.authenticateToken = (req, res, next) => {
   if (!req.headers["authorization"]) {
     util.handleError(req, res, new ErrorHandler.ForbiddenError());

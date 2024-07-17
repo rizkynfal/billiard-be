@@ -26,12 +26,12 @@ module.exports = (app) => {
     }
   });
   app.get(
-    "/v1/transaksi/getItemById/:orderId",
+    "/v1/transaksi/getTransaksiById",
     authenticateToken,
     async (req, res) => {
       try {
         var response = await queryHandler.getTransactionById(
-          req.params.orderId
+          req.query.transaksiId
         );
         util.response(res, response, "Success", 200, true);
       } catch (error) {
@@ -40,12 +40,12 @@ module.exports = (app) => {
     }
   );
   app.get(
-    "/v1/transaksi/getStatus/:order_id",
+    "/v1/transaksi/getStatusById",
     authenticateToken,
     async (req, res) => {
       try {
         var response = await queryHandler.getTransacionStatus(
-          req.params.order_id
+          req.query.transaksiId
         );
         util.response(
           res,

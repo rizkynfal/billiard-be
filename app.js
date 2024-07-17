@@ -12,6 +12,7 @@ const db = new DB();
 const path = require("path");
 require("express-session");
 const cors = require("cors");
+
 class App {
   static listen() {
     Promise.all([db.connect()]).then(() => {
@@ -27,15 +28,14 @@ class App {
           resave: true,
         })
       );
-
       app.use(passport.initialize());
       app.use(passport.session());
       app.listen(port, (err) => {
         if (err) {
-          console.log(err);
+          // console.log(err);
           return process.exit(1);
         }
-        console.log(`server is running on ${port}`);
+        // console.log(`server is running on ${port}`);
       });
 
       router(app);

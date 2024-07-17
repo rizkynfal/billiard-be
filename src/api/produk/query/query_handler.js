@@ -48,12 +48,12 @@ class ProdukQueryHandler {
   }
   async getAll() {
     try {
-      const sql = "SELECT * FROM product_tb";
+      const sql = "SELECT * FROM product_tb GROUP BY product_id";
 
       var response = await this.handler.getProduct(sql);
       return response;
     } catch (error) {
-      throw new ErrorHandler.ServerError();
+      throw new ErrorHandler.ServerError(error);
     }
   }
 }

@@ -11,7 +11,14 @@ class BookingCommandHandler {
   }
 
   async createBooking(body) {
-    const { order_id, lamaSewa, userId, produkId, tanggalBooking } = body;
+    const {
+      order_id,
+      lamaSewa,
+      userId,
+      produkId,
+      tanggalBooking,
+      transaksiId,
+    } = body;
     // // const { error } = model.validate(body);
     // const userhandler = new UserQueryHandler();
     // const user = await userhandler.findUserByEmail(body);
@@ -30,8 +37,15 @@ class BookingCommandHandler {
       const hashedId = Math.random().toString(20).substring(2);
       const orderId = "BK-" + hashedId;
       const sql = {
-        text: `INSERT INTO booking_tb (booking_id, total_lama_sewa, user_id, product_id, tanggal_booking) VALUES ($1, $2, $3, $4, $5)`,
-        values: [orderId, lamaSewa, userId, produkId, tanggalBooking],
+        text: `INSERT INTO booking_tb (booking_id, total_lama_sewa, user_id, product_id, tanggal_booking, transaksi_id) VALUES ($1, $2, $3, $4, $5, $6)`,
+        values: [
+          orderId,
+          lamaSewa,
+          userId,
+          produkId,
+          tanggalBooking,
+          transaksiId,
+        ],
       };
       const command = new BookingCommand(this.db.db, sql);
       await command.create();

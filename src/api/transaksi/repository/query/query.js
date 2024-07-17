@@ -5,7 +5,7 @@ class TransaksiQuery {
     this.db = db;
     this.sql = sql;
   }
-  async getBooking() {
+  async getTransaksi() {
     try {
       const res = await this.db.query(this.sql);
       return res.rows;

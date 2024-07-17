@@ -4,7 +4,7 @@ class TransaksiCommandModel {
   constructor() {
     this.bookingScheme = Joi.object({
       email: Joi.string().email(),
-      produk: Joi.array().required(),
+      produk: Joi.object().required(),
       price: Joi.number().integer(),
     });
   }

@@ -10,9 +10,9 @@ class TransaksiQueryHandler {
   }
   async getAllTransaksiList() {
     try {
-      const sql = util.queryGetAllSQL("booking");
+      const sql = util.queryGetAllSQL("transaksi");
       const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getBooking(sql);
+      var response = await query.getTransaksi(sql);
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -30,11 +30,11 @@ class TransaksiQueryHandler {
   async getTransactionById(param) {
     try {
       const sql = {
-        text: "SELECT * FROM transaction_tb WHERE transaction_id = $1",
+        text: "SELECT * FROM transaksi_tb WHERE transaksi_id = $1",
         values: [param],
       };
       const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getBooking();
+      var response = await query.getTransaksi();
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);

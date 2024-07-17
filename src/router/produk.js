@@ -5,23 +5,31 @@ const { authenticateToken } = require("../middleware/authentication");
 const { util, apiConstants } = require("../utils");
 const commandHandler = new ProdukCommandHandler();
 const queryHandler = new ProdukQueryHandler();
-const LocalStrategy = require("passport-local").Strategy;
+const multer = require("multer");
+const storage = multer.memoryStorage();
+var upload = multer({ storage: storage });
 
 module.exports = (app) => {
-  app.post("/v1/product/addNew", authenticateToken, async (req, res) => {
-    try {
-      var response = await commandHandler.addProduk(req.body);
-      util.response(
-        res,
-        response,
-        `Successfully Insert Data`,
-        apiConstants.RESPONSE_CODES.CREATED,
-        true
-      );
-    } catch (error) {
-      util.handleError(req, res, error);
+  app.post(
+    "/v1/product/addNew",
+    authenticateToken,
+    upload.single("foto_produk"),
+    async (req, res) => {
+      try {
+    
+        var response = await commandHandler.addProduk(req.body, req.file);
+        util.response(
+          res,
+          response,
+          `Successfully Insert Data`,
+          apiConstants.RESPONSE_CODES.CREATED,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
+  );
   app.get(
     "/v1/product/getAllAvailable",
     authenticateToken,
@@ -40,6 +48,20 @@ module.exports = (app) => {
       }
     }
   );
+  app.get("/v1/product/getAll", async (req, res) => {
+    try {
+      var response = await queryHandler.getAll();
+      util.response(
+        res,
+        response.rows,
+        "Success",
+        apiConstants.RESPONSE_CODES.OK,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
   app.delete("/v1/product/delete", authenticateToken, async (req, res) => {
     try {
       var response = await commandHandler.deleteProduk(req.body);

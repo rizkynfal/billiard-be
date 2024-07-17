@@ -6,6 +6,7 @@ const MidtransClient = require("../../../../service/midtrans_handler");
 const BookingCommand = require("./command");
 const TransaksiCommand = require("./command");
 const BookingCommandHandler = require("../../../booking/repository/command/command_handler");
+const { util } = require("../../../../utils");
 const model = new BookingCommandModel();
 
 class TransaksiCommandHandler {
@@ -14,19 +15,23 @@ class TransaksiCommandHandler {
   }
 
   async createTransaksi(body) {
-    const { email, produkList } = body;
+    const { email, tanggal_transaksi, produk } = body;
 
     const userhandler = new UserQueryHandler();
     const user = await userhandler.findUserByEmail(body);
 
     var price = 0;
-    var lamaSewa = produkList[0].jamAvailable.length;
-    for (let i = 0; i < produkList.length; i++) {
-      price += produkList[i].harga;
-    }
+    var lamaSewa =
+      produk.jamMain.length > 1
+        ? produk.jamMain.length
+        : parseInt(produk.jamMain.last.split("-")[0].split(":")[0]) -
+          parseInt(produk.jamMain[0].split("-")[0].split(":")[0]);
+
+    price = produk.harga * lamaSewa;
+
     const data = {
       email: email,
-      produk: produkList,
+      produk: produk,
       price: price,
     };
     const { error } = model.validate(data);
@@ -34,32 +39,32 @@ class TransaksiCommandHandler {
       throw new ErrorHandler.BadRequestError(error);
     }
     if (!user) {
-      throw new ErrorHandler.ForbiddenError();
+      throw new ErrorHandler.ForbiddenError("user not registered yet");
     }
-    const hashedId = Math.random().toString(40).substring(2);
+    const hashedId = util.generateRandomNumber();
     const transaksiId = "TR-" + hashedId;
     try {
       const midtrans = new MidtransClient(
         transaksiId,
         price,
-        "gopay",
+        "",
         user[0],
-        produkList
+        produk
       );
       var status = "pending";
       var response = await midtrans.createTransactionSnapPrefrence();
 
       var sql = {
-        text: "INSERT INTO public.transaksi_tb(transaksi_id, customer_id, tanggal_transaksi, status_transaksi, payment_method, total_lama_sewa, total_harga, produk_list)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+        text: "INSERT INTO public.transaksi_tb(transaksi_id, user_id, tanggal_transaksi, status_transaksi, payment_method, total_lama_sewa, total_harga, produk)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
         values: [
           midtrans.order_id,
           user[0].user_id,
-          Date(Date.now().toLocaleString()),
+          tanggal_transaksi,
           status,
           midtrans.payment_type,
           lamaSewa,
           price,
-          [produkList],
+          produk,
         ],
       };
       const command = new TransaksiCommand(this.db.db, sql);
@@ -79,21 +84,26 @@ class TransaksiCommandHandler {
                   order_id: midtrans.order_id,
                   lamaSewa: lamaSewa,
                   userId: user[0].user_id,
-                  produkId: produkList[0].id,
-                  tanggalBooking: Date(Date.now().toLocaleString()),
+                  produkId: produk.produk_id,
+                  tanggalBooking: tanggal_transaksi,
+                  transaksiId: midtrans.order_id,
                 });
                 await this.updateTransaksiStatus({
                   transaksi_id: midtrans.order_id,
-                  status: e.transaction_status,
+                  status: "Success",
+                  payment_method: e.issuer,
                 });
                 clearInterval(interval);
               } else {
                 await this.updateTransaksiStatus({
                   transaksi_id: midtrans.order_id,
                   status: e.transaction_status,
+                  payment_method: e.issuer,
                 });
               }
+              interval;
             })
+
             .catch((e) => {
               clearInterval(interval);
               throw new ErrorHandler.ServerError(e);
@@ -103,11 +113,10 @@ class TransaksiCommandHandler {
 
       return {
         res: {
-          order_id: midtrans.order_id,
+          transaksiId: midtrans.order_id,
           email: user[0].email,
-          date_transaction: Date(Date.now().toLocaleString()).split("GMT")
-            .first,
-          product: [produkList],
+          date_transaction: tanggal_transaksi,
+          product: produk,
           total_price: price,
           status: status,
         },
@@ -119,16 +128,16 @@ class TransaksiCommandHandler {
   }
 
   async updateTransaksiStatus(body) {
-    const { transaksi_id, status } = body;
+    const { transaksi_id, status, payment_method } = body;
 
     const sql = {
-      text: `UPDATE transaksi_tb SET status_transaksi = $1 WHERE transaksi_id LIKE $2`,
-      values: [status, transaksi_id],
+      text: `UPDATE transaksi_tb SET status_transaksi = $1 , payment_method = $3 WHERE transaksi_id LIKE $2`,
+      values: [status, transaksi_id, payment_method],
     };
     try {
       const command = new TransaksiCommand(this.db.db, sql);
       await command.create(this.db.db, sql);
-      return { data: "sukes" };
+      return { data: "sukses" };
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }

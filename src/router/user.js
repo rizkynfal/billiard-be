@@ -6,7 +6,8 @@ const commandHandler = new CommandHandler();
 const bodyParser = require("body-parser");
 const authenticator = require("../middleware/authentication");
 const passport = require("passport");
-
+const Auth = require("../api/auth");
+const auth = new Auth()
 module.exports = (app) => {
   app.use(bodyParser.json());
 
@@ -42,4 +43,20 @@ module.exports = (app) => {
       }
     }
   );
+  app.post("/v1/user/resetPassword", async (req, res) => {
+    try {
+      var response = await auth.resetPassword(req, res);
+      util.response(res, response, "Success Reset Password", 200, true);
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
+  app.post("/v1/user/requestOTP", async (req, res) => {
+    try {
+      var response = await auth.requestOTP(req, req);
+      util.response(res, response, "Success send otp to email", 200, true);
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
 };

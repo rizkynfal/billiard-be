@@ -7,7 +7,7 @@ class ProdukQuery {
   async getProduct(query) {
     try {
       const res = await this.db.query(query);
-      return res.rows;
+      return res;
     } catch (err) {
       throw new ErrorHandler.ServerError(err);
     }

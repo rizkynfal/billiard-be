@@ -3,6 +3,7 @@ const { Pool, Client } = pg;
 const fs = require("fs");
 require("dotenv").config();
 const { DB_ENVIRONMENT, util, apiConstants } = require("../../utils/index");
+const { ErrorHandler } = require("../../handler/error");
 
 class DB {
   constructor(
@@ -24,15 +25,16 @@ class DB {
       database: this.database,
       password: this.password,
       port: this.port,
-      ssl: true,
+      // ssl: true,
     });
   }
   async connect() {
     try {
       await this.db.connect();
-      console.log("db connected successfully");
+      // console.log("db connected successfully");
     } catch (error) {
-      console.log(error);
+      throw new ErrorHandler.ServerError(error);
+      // console.log(error);
     }
   }
 }

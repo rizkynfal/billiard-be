@@ -1,7 +1,14 @@
 const { apiConstants, DB_ENVIRONMENT } = require("./constant");
+const { generateRandomNumber } = require("./math");
+const {
+  queryGetAllSQL,
+  commandInsertSQL,
+  commandDeleteSQL,
+} = require("./sqlQuery");
 
 require("./constant");
 class Utils {
+  // response
   loggedInResponse() {
     var response = {};
   }
@@ -12,7 +19,7 @@ class Utils {
       message: message,
       data: data,
     };
-    res.json(responseObj);
+    res.status(status).json(responseObj);
   }
   handleError(req, res, err) {
     if (!res) return false;
@@ -41,16 +48,6 @@ class Utils {
         order_id: `${order_id}`,
         gross_amount: `${price}`,
       },
-      item_details: [
-        product.map((e) =>
-          JSON.stringify({
-            id: `${e.id}`,
-            price: `${e.harga}`,
-            quantity: `${e.jamAvailable.length}`,
-            name: `${e.nama}`,
-          })
-        ),
-      ],
       customer_details: {
         first_name: `${user.nama}`,
         email: user.email,
@@ -68,6 +65,7 @@ class Utils {
     };
     return option;
   }
+  // midtrans
   setMidtransOption(order_id, price, payment_type, user, product, method) {
     const options = {
       method: method,
@@ -107,42 +105,23 @@ class Utils {
     };
     return options;
   }
+
+  // query
   queryGetAllSQL(table) {
-    switch (table) {
-      case "produk":
-        return `SELECT * FROM product_tb`;
-      case "user":
-        return `SELECT * FROM usert_tb`;
-      case "booking":
-        return `SELECT * FROM booking_tb`;
-      case "transaksi":
-        return `SELECT * FROM transaksi_tb`;
-      default:
-        return "Table has not registered yet";
-    }
+    return queryGetAllSQL(table);
   }
   // insertSql
 
   commandInsertSQL(table) {
-    switch (table) {
-      case "produk":
-        return `INSERT INTO product_tb(nama,harga,deskripsi) VALUES %L`;
-      case "user":
-        return "INSERT INTO user_tb(user_id,nama,email,no_hp,password,role) VALUES($1,$2,$3,$4,$5,$6)";
-      default:
-        return "Table has not registered yet";
-    }
+    return commandInsertSQL(table);
   }
   //delete SQl
   commandDeleteSQL(table) {
-    switch (table) {
-      case "produk":
-        return `DELETE FROM product_tb WHERE nama = $1 returning nama`;
-      case "user":
-        return "INSERT INTO user_tb(user_id,nama,email,no_hp,password,role) VALUES($1,$2,$3,$4,$5,$6)";
-      default:
-        return "Table has not registered yet";
-    }
+    return commandDeleteSQL(table);
+  }
+  // export math function
+  generateRandomNumber() {
+    return generateRandomNumber();
   }
 }
 const util = new Utils();

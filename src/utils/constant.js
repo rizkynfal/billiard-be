@@ -1,5 +1,9 @@
 require("dotenv").config();
 const apiConstants = {
+  GMAIL_OTP :{
+    GMAIL : process.env.GMAIL_SENDER,
+    PASS: process.env.GMAIL_APP_PASS
+  },
   MIDTRANS_KEY: {
     MERCHANT_ID: process.env.MIDTRANS_MERCHANT_ID,
     SERVER_KEY: process.env.MIDTRANS_SERVER_KEY,

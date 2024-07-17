@@ -5,13 +5,12 @@ const { routing } = require("../middleware/routing");
 const passport = require("passport");
 const { util } = require("../utils");
 const cors = require("cors");
-const date = require("date-and-time");
+var multer = require("multer");
 
 module.exports = (app) => {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(cookieParser());
-  // app.use(cors());
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(cors());

@@ -3,7 +3,6 @@ const joi = require("joi");
 class UserCommandModel {
   constructor() {
     this.userSchema = joi.object({
-      user_id: joi.string().required(),
       nama: joi.string().required(),
       email: joi.string().email(),
       noHp: joi.string(),
@@ -13,9 +12,17 @@ class UserCommandModel {
         .required(),
       role: joi.number(),
     });
+    this.resetPass = joi.object({
+      email: joi.string().email().required(),
+      newPassword: joi.string().required(),
+      otp: joi.string().required(),
+    });
   }
   validateUserInput(user) {
     return this.userSchema.validate(user);
+  }
+  validateResetPassword(resetPass) {
+    return this.resetPass.validate(resetPass);
   }
 }
 

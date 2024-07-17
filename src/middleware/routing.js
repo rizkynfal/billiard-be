@@ -3,6 +3,8 @@ const authRoute = require("../router/auth");
 const transaksiRoute = require("../router/transaksi");
 const productRoute = require("../router/produk");
 const { util } = require("../utils");
+const bookingRoute = require("../router/booking");
+
 const validate = async (schema, req, res, next) => {
   try {
     await schema.validate(req.body, { abortEarly: false });
@@ -23,6 +25,9 @@ const routing = async (req, res, app) => {
   }
   if (req.path.includes("/product")) {
     productRoute(app);
+  }
+  if (req.path.includes("/booking")) {
+    bookingRoute(app);
   }
 };
 module.exports = {

@@ -13,12 +13,13 @@ class BookingQueryHandler {
       const sql = util.queryGetAllSQL("booking");
       const query = new BookingQuery(this.db.db, sql);
       var response = await query.getBooking(sql);
+      response = response.rows
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }
   }
-  async getTransacionStatus(param) {
+  async getBookingStatus(param) {
     try {
       const midtransClient = new MidtransClient(param);
       var response = await midtransClient.getTransactionStatus();
@@ -27,15 +28,28 @@ class BookingQueryHandler {
       throw new ErrorHandler.ServerError(error);
     }
   }
-  async getTransactionById(param) {
+  async getBookingById(param) {
     try {
       const sql = {
-        text: "SELECT * FROM transaction_tb WHERE transaction_id = $1",
+        text: "SELECT * FROM booking_tb WHERE booking_id = $1",
         values: [param],
       };
       const query = new BookingQuery(this.db.db, sql);
       var response = await query.getBooking();
       return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async getBookingByTransaksiId(param) {
+    try {
+      const sql = {
+        text: "SELECT * FROM booking_tb WHERE transaksi_id = $1",
+        values: [param],
+      };
+      const query = new BookingQuery(this.db.db, sql);
+      var response = await query.getBooking();
+      return response.rows;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }
