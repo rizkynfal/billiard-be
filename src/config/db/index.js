@@ -31,7 +31,7 @@ class DB {
   async connect() {
     try {
       await this.db.connect();
-      // console.log("db connected successfully");
+      console.log("db connected successfully");
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
       // console.log(error);
