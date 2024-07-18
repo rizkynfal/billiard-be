@@ -40,5 +40,18 @@ class TransaksiQueryHandler {
       throw new ErrorHandler.ServerError(error);
     }
   }
+  async getTransactionByUserId(param) {
+    try {
+      const sql = {
+        text: "SELECT * FROM transaksi_tb WHERE user_id = $1",
+        values: [param],
+      };
+      const query = new BookingQuery(this.db.db, sql);
+      var response = await query.getTransaksi();
+      return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
 }
 module.exports = TransaksiQueryHandler;

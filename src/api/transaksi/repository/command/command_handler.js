@@ -15,7 +15,7 @@ class TransaksiCommandHandler {
   }
 
   async createTransaksi(body) {
-    const { email, tanggal_transaksi, produk } = body;
+    const { email, nama, noHp, tanggal_transaksi, produk } = body;
 
     const userhandler = new UserQueryHandler();
     const user = await userhandler.findUserByEmail(body);
@@ -55,7 +55,7 @@ class TransaksiCommandHandler {
       var response = await midtrans.createTransactionSnapPrefrence();
 
       var sql = {
-        text: "INSERT INTO public.transaksi_tb(transaksi_id, user_id, tanggal_transaksi, status_transaksi, payment_method, total_lama_sewa, total_harga, produk)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+        text: "INSERT INTO public.transaksi_tb(transaksi_id, user_id, tanggal_transaksi, status_transaksi, payment_method, total_lama_sewa, total_harga, produk, nama_penyewa, no_hp)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)",
         values: [
           midtrans.order_id,
           user[0].user_id,
@@ -65,6 +65,8 @@ class TransaksiCommandHandler {
           lamaSewa,
           price,
           produk,
+          nama,
+          noHp,
         ],
       };
       const command = new TransaksiCommand(this.db.db, sql);
@@ -76,9 +78,9 @@ class TransaksiCommandHandler {
             .getTransactionStatus()
             .then(async (e) => {
               if (
-                e.status_code == 201 ||
-                e.transaction_status == "settlement" ||
-                e.transaction_status == "success"
+                e.status_code === 201 ||
+                e.transaction_status === "settlement" ||
+                e.transaction_status === "success"
               ) {
                 await book.createBooking({
                   order_id: midtrans.order_id,

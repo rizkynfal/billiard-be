@@ -48,10 +48,39 @@ class ProdukQueryHandler {
   }
   async getAll() {
     try {
+      const sql = "SELECT * FROM product_tb ";
+
+      var response = await this.handler.getProduct(sql);
+      var res = [];
+      for (let i = 0; i < response.rows.length; i++) {
+        res.push({
+          no: i + 1,
+          produkId: response.rows[i].product_id,
+          nama: response.rows[i].nama,
+          harga: response.rows[i].harga,
+          deskripsi: response.rows[i].deskripsi,
+        });
+      }
+      return res;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async getPhoto() {
+    try {
       const sql = "SELECT * FROM product_tb GROUP BY product_id";
 
       var response = await this.handler.getProduct(sql);
-      return response;
+      var res = [];
+      for (let i = 0; i < response.rows.length; i++) {
+        res.push({
+          no: i + 1,
+          mimeType: response.rows[i].mime_type,
+          fotoProduk: response.rows[i].foto_product,
+        });
+      }
+
+      return res;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }

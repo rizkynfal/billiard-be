@@ -29,7 +29,7 @@ exports.commandInsertSQL = (table) => {
 exports.commandDeleteSQL = (table) => {
   switch (table) {
     case "produk":
-      return `DELETE FROM product_tb WHERE nama = $1 returning nama`;
+      return `DELETE FROM product_tb WHERE product_id = $1 returning product_id`;
     case "user":
       return "INSERT INTO user_tb(user_id,nama,email,no_hp,password,role) VALUES($1,$2,$3,$4,$5,$6)";
     default:

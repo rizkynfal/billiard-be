@@ -2,6 +2,7 @@ const fetch = require("node-fetch");
 const axios = require("axios").default;
 const { util, apiConstants } = require("../utils");
 const midtransClient = require("midtrans-client");
+const { ErrorHandler } = require("../handler/error");
 const url = "https://api.sandbox.midtrans.com/v2/charge";
 class MidtransClient {
   constructor(order_id, price, payment_type, user, product) {

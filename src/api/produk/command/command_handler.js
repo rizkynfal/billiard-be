@@ -56,23 +56,21 @@ class ProdukCommandHandler {
     }
   }
   async deleteProduk(body) {
-    const data = body.data;
+    const data = body;
     try {
       const produkUsed = await this.usedProduk();
       var sql;
-      for (let i = 0; i < data.length; i++) {
-        produkUsed.rows.find((e) => e.nama == data[i].nama)
-          ? (sql = {
-              text: "UPDATE product_tb SET is_deleted = true WHERE nama = $1",
-              values: [data[i].nama],
-            })
-          : (sql = {
-              text: util.commandDeleteSQL("produk"),
-              values: [data[i].nama],
-            });
+      produkUsed.rows.find((e) => e.product_id == data.produkId)
+        ? (sql = {
+            text: "UPDATE product_tb SET is_deleted = true WHERE product_id = $1",
+            values: [data.produkId],
+          })
+        : (sql = {
+            text: util.commandDeleteSQL("produk"),
+            values: [data.produkId],
+          });
 
-        var response = await this.db.db.query(sql);
-      }
+      var response = await this.db.db.query(sql);
       return { deletedData: response.rowCount };
     } catch (error) {
       throw new errorHandler.ServerError(error);

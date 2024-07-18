@@ -16,15 +16,19 @@ module.exports = (app) => {
       util.handleError(req, res, error);
     }
   });
-  app.post("/v1/transaksi/createTransaksi", authenticateToken, async (req, res) => {
-    try {
-      var response = await commandHandler.createTransaksi(req.body);
+  app.post(
+    "/v1/transaksi/createTransaksi",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response = await commandHandler.createTransaksi(req.body);
 
-      util.response(res, response, "Success", 200, true);
-    } catch (error) {
-      util.handleError(req, res, error);
+        util.response(res, response, "Success", 200, true);
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
+  );
   app.get(
     "/v1/transaksi/getTransaksiById",
     authenticateToken,
@@ -32,6 +36,20 @@ module.exports = (app) => {
       try {
         var response = await queryHandler.getTransactionById(
           req.query.transaksiId
+        );
+        util.response(res, response, "Success", 200, true);
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
+    }
+  );
+  app.get(
+    "/v1/transaksi/getTransaksiByUserId",
+    
+    async (req, res) => {
+      try {
+        var response = await queryHandler.getTransactionByUserId(
+          req.query.userId
         );
         util.response(res, response, "Success", 200, true);
       } catch (error) {

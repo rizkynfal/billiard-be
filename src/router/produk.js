@@ -16,7 +16,6 @@ module.exports = (app) => {
     upload.single("foto_produk"),
     async (req, res) => {
       try {
-    
         var response = await commandHandler.addProduk(req.body, req.file);
         util.response(
           res,
@@ -30,6 +29,20 @@ module.exports = (app) => {
       }
     }
   );
+  app.get("/v1/product/getPhoto", authenticateToken, async (req, res) => {
+    try {
+      var response = await queryHandler.getPhoto();
+      util.response(
+        res,
+        response,
+        "Success",
+        apiConstants.RESPONSE_CODES.OK,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
   app.get(
     "/v1/product/getAllAvailable",
     authenticateToken,
@@ -53,7 +66,7 @@ module.exports = (app) => {
       var response = await queryHandler.getAll();
       util.response(
         res,
-        response.rows,
+        response,
         "Success",
         apiConstants.RESPONSE_CODES.OK,
         true
@@ -62,7 +75,7 @@ module.exports = (app) => {
       util.handleError(req, res, error);
     }
   });
-  app.delete("/v1/product/delete", authenticateToken, async (req, res) => {
+  app.delete("/v1/product/deleteById", authenticateToken, async (req, res) => {
     try {
       var response = await commandHandler.deleteProduk(req.body);
       util.response(
