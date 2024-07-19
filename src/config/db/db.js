@@ -1,4 +1,4 @@
-const { pgConfig } = require("..");
+const { pgConfig } = require("../index");
 const { util } = require("../../utils");
 const { DB } = require("./conn");
 
