@@ -48,7 +48,12 @@ class Auth {
       var response = await tokenGenerator.getAuthToken();
       return {
         token: response,
-        user: { nama: user[0].nama, email: user[0].email, role: user[0].role },
+        user: {
+          nama: user[0].nama,
+          email: user[0].email,
+          noHp: user[0].no_hp,
+          role: user[0].role,
+        },
       };
     } catch (error) {
       throw new ErrorHandler.ServerError(error);

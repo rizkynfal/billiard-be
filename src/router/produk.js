@@ -82,7 +82,7 @@ module.exports = (app) => {
       }
     }
   );
-  app.get("/v1/product/getAll", async (req, res) => {
+  app.get("/v1/product/getAll",authenticateToken, async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getAll();
       util.response(
