@@ -78,6 +78,7 @@ const DB_ENVIRONMENT = {
   DB_PASS: process.env.POSTGRE_PASSWORD,
   DB_DATABASE: process.env.POSTGRE_DATABASE,
   DB_PORT: process.env.POSTGRE_PORT,
+  DB_SSL : process.env.POSTGRE_SSL
 };
 module.exports = {
   apiConstants,

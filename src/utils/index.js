@@ -1,5 +1,5 @@
 const { apiConstants, DB_ENVIRONMENT } = require("./constant");
-const { generateRandomNumber } = require("./math");
+const { generateRandomNumber, hashPassword, generateOTP } = require("./crypt");
 const {
   queryGetAllSQL,
   commandInsertSQL,
@@ -119,9 +119,15 @@ class Utils {
   commandDeleteSQL(table) {
     return commandDeleteSQL(table);
   }
-  // export math function
+  // export crypt function
   generateRandomNumber() {
     return generateRandomNumber();
+  }
+  hashPassword(pass) {
+    return hashPassword(pass);
+  }
+  generateOTP() {
+    return generateOTP();
   }
 }
 const util = new Utils();

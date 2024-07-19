@@ -16,7 +16,7 @@ exports.authenticateToken = (req, res, next) => {
 
     jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
       if (err) {
-        util.handleError(req, res, new ErrorHandler.ForbiddenError(err));
+        util.handleError(req, res, new ErrorHandler.UnauthorizedError(err));
       } else {
         next();
       }

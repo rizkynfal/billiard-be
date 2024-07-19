@@ -1,15 +1,14 @@
 const errorHandler = require("../../../../handler/error").ErrorHandler;
 const UserModel = require("./command_model");
-const { DB } = require("../../../../config/db/index");
+const { DB } = require("../../../../config/db/conn");
 const UserCommand = require("./command");
-const bcrypt = require("bcryptjs");
 const { util } = require("../../../../utils");
+const command = new UserCommand();
 class UserCommandHandler {
   constructor() {
     this.db = new DB();
     this.model = new UserModel();
   }
-
   async createUser(body) {
     const { error } = this.model.validateUserInput(body);
     if (error) {
@@ -18,26 +17,21 @@ class UserCommandHandler {
       const hashedId = util.generateRandomNumber();
       const userId = "USR-" + hashedId;
 
-      const hashedPassword = await bcrypt.hash(body.password, 10);
-      const query = {
-        text: "INSERT INTO user_tb(user_id,nama,email,no_hp,password,role) VALUES($1, $2, $3, $4, $5, $6)",
-        values: [
-          userId,
-          body.nama,
-          body.email,
-          body.noHp,
-          hashedPassword,
-          body.role,
-        ],
+      const hashedPassword = await util.hashPassword(body.password);
+      const data = {
+        userId: userId,
+        nama: body.nama,
+        email: body.email,
+        noHp: body.noHp,
+        hashedPassword: hashedPassword,
+        role: body.role,
       };
-      const command = new UserCommand(this.db.db, query);
-      try {
-        await command
-          .create()
 
-          .catch((err) => {
-            throw new errorHandler.ServerError(err);
-          });
+      try {
+        var res = await command.createUser(data);
+        if (res.err) {
+          throw new errorHandler.ServerError(res.err);
+        }
         return {
           nama: body.nama,
           email: body.email,
@@ -55,11 +49,11 @@ class UserCommandHandler {
       throw new errorHandler.BadRequestError(error);
     } else {
       try {
-        const sql = {
-          text: "UPDATE user_tb SET password = $1, otp = '', otp_expired=null WHERE email = $2 ",
-          values: [newPassword, email],
+        const data = {
+          newPassword: newPassword,
+          email: email,
         };
-        var response = await this.db.db.query(sql);
+        var response = await command.userResetPass(data);
         if (response.rowCount < 1) {
           throw new errorHandler.ServerError("Internal Server Error");
         }
@@ -75,11 +69,12 @@ class UserCommandHandler {
       throw new errorHandler.BadRequestError("body invalid");
     }
     try {
-      const sql = {
-        text: "UPDATE user_tb SET otp = $1, otp_expired = $2 WHERE user_id = $3",
-        values: [otp, otpExpired, user_id],
+      const data = {
+        otp: otp,
+        otpExpire: otpExpired,
+        userId: user_id,
       };
-      var response = await this.db.db.query(sql);
+      var response = await command.userUpdateOTP(data);
       return response;
     } catch (error) {
       throw new errorHandler.ServerError(error);

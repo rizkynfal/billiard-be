@@ -1,8 +1,9 @@
-const { DB } = require("../../../../config/db");
+const { DB } = require("../../../../config/db/conn");
 const { ErrorHandler } = require("../../../../handler/error");
 const MidtransClient = require("../../../../service/midtrans_handler");
 const { util } = require("../../../../utils");
-const BookingQuery = require("./query");
+const TransaksiQuery = require("./query");
+const query = new TransaksiQuery();
 
 class TransaksiQueryHandler {
   constructor() {
@@ -10,9 +11,7 @@ class TransaksiQueryHandler {
   }
   async getAllTransaksiList() {
     try {
-      const sql = util.queryGetAllSQL("transaksi");
-      const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getTransaksi(sql);
+      var response = await query.getAllTransaksi();
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -29,12 +28,7 @@ class TransaksiQueryHandler {
   }
   async getTransactionById(param) {
     try {
-      const sql = {
-        text: "SELECT * FROM transaksi_tb WHERE transaksi_id = $1",
-        values: [param],
-      };
-      const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getTransaksi();
+      var response = await query.getTransaksiById({ transaksiId: param });
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -42,12 +36,7 @@ class TransaksiQueryHandler {
   }
   async getTransactionByUserId(param) {
     try {
-      const sql = {
-        text: "SELECT * FROM transaksi_tb WHERE user_id = $1",
-        values: [param],
-      };
-      const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getTransaksi();
+      var response = await query.getTransaksiByUserId({ userId: param });
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);

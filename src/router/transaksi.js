@@ -45,7 +45,7 @@ module.exports = (app) => {
   );
   app.get(
     "/v1/transaksi/getTransaksiByUserId",
-    
+    authenticateToken,
     async (req, res) => {
       try {
         var response = await queryHandler.getTransactionByUserId(

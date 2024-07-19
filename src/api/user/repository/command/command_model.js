@@ -1,8 +1,9 @@
 const joi = require("joi");
 
 class UserCommandModel {
-  constructor() {
-    this.userSchema = joi.object({
+  constructor() {}
+  validateUserInput(user) {
+    const userSchema = joi.object({
       nama: joi.string().required(),
       email: joi.string().email(),
       noHp: joi.string(),
@@ -12,17 +13,15 @@ class UserCommandModel {
         .required(),
       role: joi.number(),
     });
-    this.resetPass = joi.object({
+    return userSchema.validate(user);
+  }
+  validateResetPassword(resetPass) {
+    const resetPassSchema = joi.object({
       email: joi.string().email().required(),
       newPassword: joi.string().required(),
       otp: joi.string().required(),
     });
-  }
-  validateUserInput(user) {
-    return this.userSchema.validate(user);
-  }
-  validateResetPassword(resetPass) {
-    return this.resetPass.validate(resetPass);
+    return resetPassSchema.validate(resetPass);
   }
 }
 

@@ -1,18 +1,16 @@
 const { ErrorHandler } = require("../../../../handler/error");
-
+const pg = require("../../../../config/db/db");
 class UserQuery {
-  constructor(db, query) {
-    this.db = db;
-    this.query = query;
+  constructor() {}
+  async getAllUser() {
+    const query = `SELECT * FROM user_tb `;
+    var res = await pg.dbQuery(query);
+    return res[0];
   }
-  async getUser() {
-  
-    try {
-      const res = await this.db.query(this.query);
-      return res.rows;
-    } catch (err) {
-      throw new ErrorHandler.ServerError();
-    }
+  async getUserByEmail(data) {
+    const query = `SELECT * FROM user_tb WHERE email = '${data.email}'`;
+    var res = await pg.dbQuery(query);
+    return res;
   }
 }
 module.exports = UserQuery;

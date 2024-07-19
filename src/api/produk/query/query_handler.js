@@ -1,33 +1,22 @@
 const ProdukQueryModel = require("./query_model");
 const ProdukQuery = require("./query");
 const { ErrorHandler } = require("../../../handler/error");
-const { DB } = require("../../../config/db");
+const { DB } = require("../../../config/db/conn");
 const { util } = require("../../../utils");
 
 class ProdukQueryHandler {
   constructor() {
     this.db = new DB();
     this.model = new ProdukQueryModel();
-    this.handler = new ProdukQuery(this.db.db);
+    this.handler = new ProdukQuery();
   }
   async getAllAvailableProduct(params) {
-    const sql = {
-      text: `SELECT DISTINCT a.product_id,a.nama,a.deskripsi FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking LIKE $1 || '%')b ON b.product_id <> a.product_id ORDER BY a.product_id`,
-      values: [params.tanggal],
+    const data = {
+      tanggal: params.tanggal,
     };
 
     try {
-      var responses;
-      await this.db.db
-        .query(sql)
-        .then((a) => {
-          responses =
-            a.rows.length < 1 ? "Tidak ada produk yang available" : a.rows;
-        })
-        .catch((e) => {
-          throw new ErrorHandler.ServerError(e);
-        });
-
+      var responses = await this.handler.getAllAvailableProduct(data);
       return responses;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -35,12 +24,10 @@ class ProdukQueryHandler {
   }
   async getByNama(nama) {
     try {
-      const sql = {
-        text: `SELECT nama FROM product_tb WHERE nama LIKE $1`,
-        values: [nama],
+      const data = {
+        nama: nama,
       };
-
-      var response = await this.handler.getProduct(sql);
+      var response = await this.handler.getProductByNama(data);
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -48,17 +35,15 @@ class ProdukQueryHandler {
   }
   async getAll() {
     try {
-      const sql = "SELECT * FROM product_tb ";
-
-      var response = await this.handler.getProduct(sql);
+      var response = await this.handler.getAllProduct();
       var res = [];
-      for (let i = 0; i < response.rows.length; i++) {
+      for (let i = 0; i < response.length; i++) {
         res.push({
           no: i + 1,
-          produkId: response.rows[i].product_id,
-          nama: response.rows[i].nama,
-          harga: response.rows[i].harga,
-          deskripsi: response.rows[i].deskripsi,
+          produkId: response[i].product_id,
+          nama: response[i].nama,
+          harga: response[i].harga,
+          deskripsi: response[i].deskripsi,
         });
       }
       return res;
@@ -68,18 +53,17 @@ class ProdukQueryHandler {
   }
   async getPhoto() {
     try {
-      const sql = "SELECT * FROM product_tb GROUP BY product_id";
-
-      var response = await this.handler.getProduct(sql);
+      var response = await this.handler.getAllPhoto();
       var res = [];
-      for (let i = 0; i < response.rows.length; i++) {
-        res.push({
-          no: i + 1,
-          mimeType: response.rows[i].mime_type,
-          fotoProduk: response.rows[i].foto_product,
-        });
+      if (response.length >= 1) {
+        for (let i = 0; i < response.length; i++) {
+          res.push({
+            no: i + 1,
+            mimeType: response[i].mime_type,
+            fotoProduk: response[i].foto_product,
+          });
+        }
       }
-
       return res;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);

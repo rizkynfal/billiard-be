@@ -1,19 +1,16 @@
-const { DB } = require("../../../../config/db");
+const { DB } = require("../../../../config/db/conn");
 const { ErrorHandler } = require("../../../../handler/error");
 const MidtransClient = require("../../../../service/midtrans_handler");
 const { util } = require("../../../../utils");
 const BookingQuery = require("./query");
-
+const query = new BookingQuery();
 class BookingQueryHandler {
   constructor() {
     this.db = new DB();
   }
   async getAllBookingList() {
     try {
-      const sql = util.queryGetAllSQL("booking");
-      const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getBooking(sql);
-      response = response.rows
+      var response = await query.getAllBookingList();
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -30,12 +27,10 @@ class BookingQueryHandler {
   }
   async getBookingById(param) {
     try {
-      const sql = {
-        text: "SELECT * FROM booking_tb WHERE booking_id = $1",
-        values: [param],
+      const data = {
+        bookingId: param,
       };
-      const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getBooking();
+      var response = await query.getBookingByBookingId(data);
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -43,13 +38,11 @@ class BookingQueryHandler {
   }
   async getBookingByTransaksiId(param) {
     try {
-      const sql = {
-        text: "SELECT * FROM booking_tb WHERE transaksi_id = $1",
-        values: [param],
+      const data = {
+        transaksiId: param,
       };
-      const query = new BookingQuery(this.db.db, sql);
-      var response = await query.getBooking();
-      return response.rows;
+      var response = await query.getBookingByTransaksiId(data);
+      return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }

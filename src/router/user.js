@@ -29,6 +29,7 @@ module.exports = (app) => {
       }
     }
   );
+  
   app.get(
     "/v1/user/search",
     authenticator.authenticateToken,

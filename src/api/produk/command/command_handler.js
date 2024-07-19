@@ -1,4 +1,4 @@
-const { DB } = require("../../../config/db");
+const { DB } = require("../../../config/db/conn");
 const { ErrorHandler } = require("../../../handler/error");
 const { util } = require("../../../utils");
 const ProdukQueryHandler = require("../query/query_handler");
@@ -7,6 +7,8 @@ const ProdukCommandModel = require("./command_model");
 const format = require("pg-format");
 const errorHandler = ErrorHandler;
 const queryHandler = new ProdukQueryHandler();
+const command = new ProdukCommand();
+
 class ProdukCommandHandler {
   constructor() {
     this.db = new DB();
@@ -38,13 +40,17 @@ class ProdukCommandHandler {
         file.mimetype,
       ];
 
-      const sql = {
-        text: "INSERT INTO product_tb(product_id,nama,harga,deskripsi,is_deleted,foto_product,mime_type) VALUES($1,$2,$3,$4,$5,$6,$7)",
-        values: values,
+      const data = {
+        productId: productId,
+        nama: data.nama,
+        harga: data.harga,
+        deskripsi: data.deskripsi,
+        isDeleted: false,
+        fotoProduk: base64Image,
+        mimeType: file.mimetype,
       };
-      const command = new ProdukCommand(this.db.db, sql);
       try {
-        await command.create().catch((err) => {
+        await command.createProduk(data).catch((err) => {
           throw new errorHandler.ServerError(err);
         });
         return {
@@ -59,19 +65,10 @@ class ProdukCommandHandler {
     const data = body;
     try {
       const produkUsed = await this.usedProduk();
-      var sql;
-      produkUsed.rows.find((e) => e.product_id == data.produkId)
-        ? (sql = {
-            text: "UPDATE product_tb SET is_deleted = true WHERE product_id = $1",
-            values: [data.produkId],
-          })
-        : (sql = {
-            text: util.commandDeleteSQL("produk"),
-            values: [data.produkId],
-          });
-
-      var response = await this.db.db.query(sql);
-      return { deletedData: response.rowCount };
+      var response = produkUsed.find((e) => e.product_id == data.produkId)
+        ? command.updateProdukById({ produkId: data.produkId })
+        : command.deleteProdukById({ produkId: data.produkId });
+      return { deletedData: response };
     } catch (error) {
       throw new errorHandler.ServerError(error);
     }
@@ -79,10 +76,7 @@ class ProdukCommandHandler {
 
   async usedProduk() {
     try {
-      var sql = {
-        text: "SELECT DISTINCT a.product_id, a.nama FROM product_tb a JOIN booking_tb b ON b.product_id = a.product_id",
-      };
-      var response = await this.db.db.query(sql);
+      var response = await command.getUsedProduk();
       return response;
     } catch (error) {
       throw new errorHandler.ServerError(error);

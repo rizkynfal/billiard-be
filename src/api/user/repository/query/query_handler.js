@@ -1,19 +1,18 @@
 const { ErrorHandler } = require("../../../../handler/error");
-const { DB } = require("../../../../config/db");
+const { DB } = require("../../../../config/db/conn");
 const UserQueryModel = require("./query_model");
 const UserQuery = require("./query");
 const { text } = require("body-parser");
+const query = new UserQuery();
+
 class UserQueryHandler {
   constructor() {
-    this.db = new DB();
     this.model = new UserQueryModel();
   }
 
   async findAll() {
     try {
-      const sql = "SELECT * FROM user_tb";
-      const handler = new UserQuery(this.db.db, sql);
-      var response = await handler.getUser();
+      var response = await query.getAllUser();
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError();
@@ -29,14 +28,10 @@ class UserQueryHandler {
       throw new ErrorHandler.BadRequestError(error);
     } else {
       try {
-        let sql = `SELECT * FROM user_tb WHERE email = $1`;
-
-        const querySql = {
-          text: sql,
-          values: [param.email],
+        const data = {
+          email: param.email,
         };
-        const query = new UserQuery(this.db.db, querySql);
-        var response = await query.getUser();
+        var response = await query.getUserByEmail(data);
 
         return response;
       } catch (error) {
@@ -80,7 +75,6 @@ class UserQueryHandler {
           values: value,
         };
 
-        const query = new UserQuery(this.db.db, querySql);
         var response = await query.getUser();
         return response;
       } catch (error) {

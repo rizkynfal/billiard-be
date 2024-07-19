@@ -1,13 +1,13 @@
-const { DB } = require("../../../../config/db");
+const { DB } = require("../../../../config/db/conn");
 const { ErrorHandler } = require("../../../../handler/error");
 const UserQueryHandler = require("../../../user/repository/query/query_handler");
-const BookingCommandModel = require("./command_model");
+const TransaksiCommandModel = require("./command_model");
 const MidtransClient = require("../../../../service/midtrans_handler");
-const BookingCommand = require("./command");
 const TransaksiCommand = require("./command");
 const BookingCommandHandler = require("../../../booking/repository/command/command_handler");
 const { util } = require("../../../../utils");
-const model = new BookingCommandModel();
+const model = new TransaksiCommandModel();
+const command = new TransaksiCommand();
 
 class TransaksiCommandHandler {
   constructor() {
@@ -54,25 +54,22 @@ class TransaksiCommandHandler {
       var status = "pending";
       var response = await midtrans.createTransactionSnapPrefrence();
 
-      var sql = {
-        text: "INSERT INTO public.transaksi_tb(transaksi_id, user_id, tanggal_transaksi, status_transaksi, payment_method, total_lama_sewa, total_harga, produk, nama_penyewa, no_hp)  VALUES ($1, $2, $3, $4, $5, $6, $7, $8,$9,$10)",
-        values: [
-          midtrans.order_id,
-          user[0].user_id,
-          tanggal_transaksi,
-          status,
-          midtrans.payment_type,
-          lamaSewa,
-          price,
-          produk,
-          nama,
-          noHp,
-        ],
+      var dataTr = {
+        transaksiId: midtrans.order_id,
+        userId: user[0].user_id,
+        tanggalTransaksi: tanggal_transaksi,
+        status: status,
+        paymentMethod: midtrans.payment_type,
+        lamaSewa: lamaSewa,
+        price: price,
+        produk: produk,
+        nama: nama,
+        noHp: noHp,
       };
-      const command = new TransaksiCommand(this.db.db, sql);
+
       const book = new BookingCommandHandler();
 
-      await command.create().then((e) => {
+      await command.createTransaksi(dataTr).then((e) => {
         var interval = setInterval(async () => {
           await midtrans
             .getTransactionStatus()
@@ -132,13 +129,13 @@ class TransaksiCommandHandler {
   async updateTransaksiStatus(body) {
     const { transaksi_id, status, payment_method } = body;
 
-    const sql = {
-      text: `UPDATE transaksi_tb SET status_transaksi = $1 , payment_method = $3 WHERE transaksi_id LIKE $2`,
-      values: [status, transaksi_id, payment_method],
+    const data = {
+      statusTransaksi: status,
+      transaksiId: transaksi_id,
+      paymenMethod: payment_method,
     };
     try {
-      const command = new TransaksiCommand(this.db.db, sql);
-      await command.create(this.db.db, sql);
+      await command.updateTransaksiStatus(data);
       return { data: "sukses" };
     } catch (error) {
       throw new ErrorHandler.ServerError(error);

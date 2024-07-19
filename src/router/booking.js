@@ -23,6 +23,14 @@ module.exports = (app) => {
       }
     }
   );
+  app.get("/v1/booking/getByBookingId", authenticateToken, async (req, res) => {
+    try {
+      var response = await queryHandler.getBookingById(req.query.bookingId);
+      util.response(res, response, "Success", 200, true);
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
   app.get("/v1/booking/getAll", authenticateToken, async (req, res) => {
     try {
       var response = await queryHandler.getAllBookingList();

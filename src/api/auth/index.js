@@ -86,18 +86,15 @@ class Auth {
       throw new ErrorHandler.BadRequestError("Email not found");
     }
     try {
-      const otp = Math.floor(1000 + Math.random() * 9000);
-      const otpExpired = new Date();
+      const otp = util.generateOTP();
+      const otpExpired = new Date(Date.now());
       otpExpired.setMinutes(otpExpired.getMinutes() + 1);
-      var result = await commandHandler.userUpdateOTP({
+      await commandHandler.userUpdateOTP({
         user_id: user[0].user_id,
         otp: otp,
         otpExpired: otpExpired,
       });
 
-      if (result.rowCount < 1) {
-        throw new ErrorHandler.ServerError("Internal Server Error");
-      }
       const transporter = nodemailer.createTransport({
         service: "gmail",
         secure: false,
