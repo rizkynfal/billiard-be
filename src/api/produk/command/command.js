@@ -32,7 +32,7 @@ class ProdukCommand {
   }
   async deleteProdukById(data) {
     try {
-      const query = `DELETE FROM product_tb WHERE product_id = ${data.produkId}`;
+      const query = `DELETE FROM product_tb WHERE product_id = '${data.produkId}'`;
       const res = await pg.dbQuery(query);
       return res;
     } catch (err) {

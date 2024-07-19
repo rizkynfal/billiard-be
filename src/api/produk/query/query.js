@@ -21,9 +21,18 @@ class ProdukQuery {
       throw new ErrorHandler.ServerError(error);
     }
   }
+  async getPhotoById(data) {
+    try {
+      const query = `SELECT mime_type,foto_product FROM product_tb WHERE product_id ='${data.produkId}'`;
+      const res = await pg.dbQuery(query);
+      return res;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
   async getProductByNama(data) {
     try {
-      const query = `SELECT nama FROM product_tb WHERE nama LIKE ${data.nama}`;
+      const query = `SELECT nama FROM product_tb WHERE nama LIKE '${data.nama}'`;
       const res = await pg.dbQuery(query);
       return res;
     } catch (error) {

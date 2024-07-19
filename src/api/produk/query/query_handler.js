@@ -69,6 +69,17 @@ class ProdukQueryHandler {
       throw new ErrorHandler.ServerError(error);
     }
   }
+  async getPhotoById(param) {
+    try {
+      var response = await this.handler.getPhotoById(param);
+      return {
+        mimeType: response[0].mime_type,
+        fotoProduk: response[0].foto_product,
+      };
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
 }
 
 module.exports = ProdukQueryHandler;

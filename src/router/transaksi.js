@@ -2,15 +2,14 @@ const { util, apiConstants } = require("../utils/index");
 const { ErrorHandler } = require("../handler/error");
 const bodyParser = require("body-parser");
 const { authenticateToken } = require("../middleware/authentication");
-const TransaksiCommandHandler = require("../api/transaksi/repository/command/command_handler");
-const TransaksiQueryHandler = require("../api/transaksi/repository/query/query_handler");
-const commandHandler = new TransaksiCommandHandler();
-const queryHandler = new TransaksiQueryHandler();
+const { apiHandler } = require("../api/api_handler");
+
 module.exports = (app) => {
   app.use(bodyParser.json());
   app.get("/v1/transaksi/getAll", authenticateToken, async (req, res) => {
     try {
-      var response = await queryHandler.getAllTransaksiList();
+      var response =
+        await apiHandler.transaksiHandler.query.getAllTransaksiList();
       util.response(res, response, "Success", 200, true);
     } catch (error) {
       util.handleError(req, res, error);
@@ -21,7 +20,8 @@ module.exports = (app) => {
     authenticateToken,
     async (req, res) => {
       try {
-        var response = await commandHandler.createTransaksi(req.body);
+        var response =
+          await apiHandler.transaksiHandler.command.createTransaksi(req.body);
 
         util.response(res, response, "Success", 200, true);
       } catch (error) {
@@ -34,9 +34,10 @@ module.exports = (app) => {
     authenticateToken,
     async (req, res) => {
       try {
-        var response = await queryHandler.getTransactionById(
-          req.query.transaksiId
-        );
+        var response =
+          await apiHandler.transaksiHandler.query.getTransactionById(
+            req.query.transaksiId
+          );
         util.response(res, response, "Success", 200, true);
       } catch (error) {
         util.handleError(req, res, error);
@@ -48,9 +49,10 @@ module.exports = (app) => {
     authenticateToken,
     async (req, res) => {
       try {
-        var response = await queryHandler.getTransactionByUserId(
-          req.query.userId
-        );
+        var response =
+          await apiHandler.transaksiHandler.query.getTransactionByUserId(
+            req.query.userId
+          );
         util.response(res, response, "Success", 200, true);
       } catch (error) {
         util.handleError(req, res, error);
@@ -62,9 +64,10 @@ module.exports = (app) => {
     authenticateToken,
     async (req, res) => {
       try {
-        var response = await queryHandler.getTransacionStatus(
-          req.query.transaksiId
-        );
+        var response =
+          await apiHandler.transaksiHandler.query.getTransacionStatus(
+            req.query.transaksiId
+          );
         util.response(
           res,
           response,

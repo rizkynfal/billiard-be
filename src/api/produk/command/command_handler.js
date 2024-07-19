@@ -30,16 +30,6 @@ class ProdukCommandHandler {
       const hashedId = util.generateRandomNumber();
       const productId = "PR-" + (totalProduk.rowCount + 1) + "-" + hashedId;
       const base64Image = file.buffer.toString("base64");
-      const values = [
-        productId,
-        data.nama,
-        data.harga,
-        data.deskripsi,
-        false,
-        base64Image,
-        file.mimetype,
-      ];
-
       const data = {
         productId: productId,
         nama: data.nama,

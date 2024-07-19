@@ -1,11 +1,8 @@
 const passport = require("passport");
-const ProdukCommandHandler = require("../api/produk/command/command_handler");
-const ProdukQueryHandler = require("../api/produk/query/query_handler");
 const { authenticateToken } = require("../middleware/authentication");
 const { util, apiConstants } = require("../utils");
-const commandHandler = new ProdukCommandHandler();
-const queryHandler = new ProdukQueryHandler();
 const multer = require("multer");
+const { apiHandler } = require("../api/api_handler");
 const storage = multer.memoryStorage();
 var upload = multer({ storage: storage });
 
@@ -16,7 +13,10 @@ module.exports = (app) => {
     upload.single("foto_produk"),
     async (req, res) => {
       try {
-        var response = await commandHandler.addProduk(req.body, req.file);
+        var response = await apiHandler.produkHandler.command.addProduk(
+          req.body,
+          req.file
+        );
         util.response(
           res,
           response,
@@ -29,9 +29,9 @@ module.exports = (app) => {
       }
     }
   );
-  app.get("/v1/product/getPhoto", authenticateToken, async (req, res) => {
+  app.get("/v1/product/getAllPhoto", authenticateToken, async (req, res) => {
     try {
-      var response = await queryHandler.getPhoto();
+      var response = await apiHandler.produkHandler.query.getPhoto();
       util.response(
         res,
         response,
@@ -43,12 +43,33 @@ module.exports = (app) => {
       util.handleError(req, res, error);
     }
   });
+
+  app.get("/v1/product/getPhotoById", authenticateToken, async (req, res) => {
+    try {
+      var response = await apiHandler.produkHandler.query.getPhotoById(
+        req.query
+      );
+      util.response(
+        res,
+        response,
+        "Success",
+        apiConstants.RESPONSE_CODES.OK,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
+
   app.get(
     "/v1/product/getAllAvailable",
     authenticateToken,
     async (req, res) => {
       try {
-        var response = await queryHandler.getAllAvailableProduct(req.query);
+        var response =
+          await apiHandler.produkHandler.query.getAllAvailableProduct(
+            req.query
+          );
         util.response(
           res,
           response,
@@ -63,7 +84,7 @@ module.exports = (app) => {
   );
   app.get("/v1/product/getAll", async (req, res) => {
     try {
-      var response = await queryHandler.getAll();
+      var response = await apiHandler.produkHandler.query.getAll();
       util.response(
         res,
         response,
@@ -77,7 +98,9 @@ module.exports = (app) => {
   });
   app.delete("/v1/product/deleteById", authenticateToken, async (req, res) => {
     try {
-      var response = await commandHandler.deleteProduk(req.body);
+      var response = await apiHandler.produkHandler.command.deleteProduk(
+        req.body
+      );
       util.response(
         res,
         response,

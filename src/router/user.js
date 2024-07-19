@@ -1,13 +1,7 @@
-const QueryHandler = require("../api/user/repository/query/query_handler");
-const CommandHandler = require("../api/user/repository/command/command_handler");
 const { util, apiConstants } = require("../utils");
-const queryHandler = new QueryHandler();
-const commandHandler = new CommandHandler();
 const bodyParser = require("body-parser");
 const authenticator = require("../middleware/authentication");
-const passport = require("passport");
-const Auth = require("../api/auth");
-const auth = new Auth()
+const { apiHandler } = require("../api/api_handler");
 module.exports = (app) => {
   app.use(bodyParser.json());
 
@@ -16,7 +10,7 @@ module.exports = (app) => {
     authenticator.authenticateToken,
     async (req, res) => {
       try {
-        const users = await commandHandler.createUser(req.body);
+        const users = await apiHandler.userHandler.command.createUser(req.body);
         util.response(
           res,
           users,
@@ -29,7 +23,7 @@ module.exports = (app) => {
       }
     }
   );
-  
+
   app.get(
     "/v1/user/search",
     authenticator.authenticateToken,
@@ -37,7 +31,9 @@ module.exports = (app) => {
       const params = req.query;
       try {
         var users;
-        users = await queryHandler.findUserByNameOrEmail(params);
+        users = await apiHandler.userHandler.query.findUserByNameOrEmail(
+          params
+        );
         util.response(res, users, "Success", 200, true);
       } catch (error) {
         util.handleError(req, res, error);
@@ -46,7 +42,7 @@ module.exports = (app) => {
   );
   app.post("/v1/user/resetPassword", async (req, res) => {
     try {
-      var response = await auth.resetPassword(req, res);
+      var response = await apiHandler.auth.resetPassword(req, res);
       util.response(res, response, "Success Reset Password", 200, true);
     } catch (error) {
       util.handleError(req, res, error);
@@ -54,7 +50,7 @@ module.exports = (app) => {
   });
   app.post("/v1/user/requestOTP", async (req, res) => {
     try {
-      var response = await auth.requestOTP(req, req);
+      var response = await apiHandler.auth.requestOTP(req, req);
       util.response(res, response, "Success send otp to email", 200, true);
     } catch (error) {
       util.handleError(req, res, error);
