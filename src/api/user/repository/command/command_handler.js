@@ -14,28 +14,22 @@ class UserCommandHandler {
     if (error) {
       throw new errorHandler.BadRequestError(error);
     } else {
-      const hashedId = util.generateRandomNumber();
-      const userId = "USR-" + hashedId;
-
-      const hashedPassword = await util.hashPassword(body.password);
-      const data = {
-        userId: userId,
-        nama: body.nama,
-        email: body.email,
-        noHp: body.noHp,
-        hashedPassword: hashedPassword,
-        role: body.role,
-      };
-
       try {
-        var res = await command.createUser(data);
-        if (res.err) {
-          throw new errorHandler.ServerError(res.err);
-        }
-        return {
+        const hashedId = util.generateRandomNumber();
+        const userId = "USR-" + hashedId;
+
+        const hashedPassword = await util.hashPassword(body.password);
+        const data = {
+          userId: userId,
           nama: body.nama,
           email: body.email,
+          noHp: body.noHp,
+          hashedPassword: hashedPassword,
+          role: body.role,
         };
+        var response = await command.createUser(data);
+
+        return response;
       } catch (error) {
         throw new errorHandler.ServerError(error);
       }

@@ -32,7 +32,6 @@ class UserQueryHandler {
           email: param.email,
         };
         var response = await query.getUserByEmail(data);
-
         return response;
       } catch (error) {
         throw new ErrorHandler.ServerError(error);

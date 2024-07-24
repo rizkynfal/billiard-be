@@ -17,7 +17,7 @@ const dbQuery = async (query) => {
         client.query(query, (err, result) => {
           client.release();
           if (err) {
-            reject(console.log(err));
+            reject(new ErrorHandler.ServerError(err));
           } else {
             const { rows } = result;
 
@@ -26,8 +26,7 @@ const dbQuery = async (query) => {
         });
       });
     return recordSet().catch((err) => {
-      console.log(err);
-      return err;
+      throw new ErrorHandler.ServerError(err);
     });
   } catch (error) {
     throw new ErrorHandler.ServerError(error);

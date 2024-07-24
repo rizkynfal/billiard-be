@@ -17,12 +17,13 @@ class Auth {
   }
   async register(req, res) {
     const existingUser = await queryHandler.findUserByEmail(req.body);
-
+    console.log(existingUser);
     if (existingUser[0]) {
       throw new ErrorHandler.BadRequestError("Email Already Registered");
     } else {
       try {
-        return await commandHandler.createUser(req.body);
+        var response = await commandHandler.createUser(req.body);
+        return response;
       } catch (error) {
         throw new ErrorHandler.ServerError(error);
       }
@@ -36,7 +37,7 @@ class Auth {
       throw new ErrorHandler.BadRequestError("Email or Password is Incorrect");
     } else if (user) {
       const validPassword = await bcrypt.compare(password, user[0].password);
-
+      console.log(validPassword);
       if (!validPassword)
         throw new ErrorHandler.BadRequestError(
           "Email or Password is Incorrect"

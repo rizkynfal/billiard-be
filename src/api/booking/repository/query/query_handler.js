@@ -20,7 +20,7 @@ class BookingQueryHandler {
   async getBookingByTanggal(params) {
     try {
       var response = await query.getBookingByTanggal(params);
-    
+
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -41,14 +41,18 @@ class BookingQueryHandler {
         response = await query.getBookingList(body);
       }
       var res = [];
+
       for (let i = 0; i < response.length; i++) {
+        var booked = JSON.parse(response[i].booked);
         res.push({
           no: i + 1,
           bookingId: response[i].booking_id,
           tanggalBooking:
             util.formattedDate(new Date(response[i].tanggal_booking)) +
             " " +
-            response[i].jam_booking,
+            booked[0].split(" - ")[0] +
+            " - " +
+            booked[booked.length - 1].split(" - ")[1],
           transaksiId: response[i].transaksi_id,
           produkId: response[i].product_id,
           namaPenyewa: response[i].nama_penyewa,

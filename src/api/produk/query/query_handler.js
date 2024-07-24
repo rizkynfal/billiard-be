@@ -14,7 +14,7 @@ class ProdukQueryHandler {
   constructor() {
     this.db = new DB();
     this.model = new ProdukQueryModel();
-    this.handler = new ProdukQuery();
+    this.query = new ProdukQuery();
   }
   async getAllAvailableProduct(params) {
     const data = {
@@ -22,12 +22,37 @@ class ProdukQueryHandler {
     };
 
     try {
-      const dataBookingByTanggal = await bookingQuery.getBookingByTanggal(data);
+      var defaultJam = JAM_AVAILABLE.JAM;
+
+      const dataBookingByTanggal = await this.query.getAllBookedProduct(data);
       var responses;
       if (isEmpty(dataBookingByTanggal)) {
         responses = await this.getAll();
       } else {
-        responses = await this.handler.getAllAvailableProduct(data);
+        const transaksiData =
+          await transaksiHandler.query.getTransactionTglPRid({
+            tanggal: data.tanggal,
+            produkId: dataBookingByTanggal[0].product_id,
+          });
+        if (!isEmpty(transaksiData)) {
+          for (let i = 0; i < transaksiData.length; i++) {
+            var booked = JSON.parse(transaksiData[i].booked);
+            if (!isEmpty(booked)) {
+              for (let j = 0; j < booked.length; j++) {
+                var sameData = defaultJam.indexOf(booked[j]) || null;
+                if (sameData > 0) {
+                  var index = defaultJam.indexOf(booked[j]);
+                  defaultJam.splice(index, 1);
+                }
+              }
+            }
+          }
+        }
+        if (isEmpty(defaultJam)) {
+          responses = await this.query.getAllAvailableProduct(data);
+        } else {
+          responses = await this.getAll();
+        }
       }
       return responses;
     } catch (error) {
@@ -39,7 +64,7 @@ class ProdukQueryHandler {
       const data = {
         nama: nama,
       };
-      var response = await this.handler.getProductByNama(data);
+      var response = await this.query.getProductByNama(data);
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -47,7 +72,7 @@ class ProdukQueryHandler {
   }
   async getAll() {
     try {
-      var response = await this.handler.getAllProduct();
+      var response = await this.query.getAllProduct();
       var res = [];
       // for (let i = 0; i < response.length; i++) {
       //   res.push({
@@ -65,7 +90,7 @@ class ProdukQueryHandler {
   }
   async getProdukById(param) {
     try {
-      var response = await this.handler.getProductById(param);
+      var response = await this.query.getProductById(param);
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -73,7 +98,7 @@ class ProdukQueryHandler {
   }
   async getPhoto() {
     try {
-      var response = await this.handler.getAllPhoto();
+      var response = await this.query.getAllPhoto();
       var res = [];
       if (response.length >= 1) {
         for (let i = 0; i < response.length; i++) {
@@ -91,7 +116,7 @@ class ProdukQueryHandler {
   }
   async getPhotoById(param) {
     try {
-      var response = await this.handler.getPhotoById(param);
+      var response = await this.query.getPhotoById(param);
       return {
         mimeType: response[0].mime_type,
         fotoProduk: response[0].foto_product,
@@ -111,7 +136,7 @@ class ProdukQueryHandler {
       const transaksiData = await transaksiHandler.query.getTransactionTglPRid(
         param
       );
-      var dataProduk = await this.handler.getProductById(param);
+      var dataProduk = await this.query.getProductById(param);
       var defaultJam = JAM_AVAILABLE.JAM;
       response = {
         produk: dataProduk,
@@ -141,7 +166,7 @@ class ProdukQueryHandler {
   }
   async usedProduk() {
     try {
-      var response = await this.handler.getUsedProduk();
+      var response = await this.query.getUsedProduk();
       return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
