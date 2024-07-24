@@ -37,7 +37,7 @@ class Auth {
       throw new ErrorHandler.BadRequestError("Email or Password is Incorrect");
     } else if (user) {
       const validPassword = await bcrypt.compare(password, user[0].password);
-      console.log(validPassword);
+
       if (!validPassword)
         throw new ErrorHandler.BadRequestError(
           "Email or Password is Incorrect"
@@ -50,6 +50,7 @@ class Auth {
       return {
         token: response,
         user: {
+          userId: user[0].user_id,
           nama: user[0].nama,
           email: user[0].email,
           noHp: user[0].no_hp,

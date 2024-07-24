@@ -4,3 +4,4 @@ yarn.lock
 # *.env.example
 .vercel
 src/config/index.js
+src/config/index.js

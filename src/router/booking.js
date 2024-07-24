@@ -17,9 +17,10 @@ module.exports = (app) => {
         util.response(
           res,
           response,
-          "Success",
+
           apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
-          apiConstants.RESPONSE_STATUS.SUCCESS
+          apiConstants.RESPONSE_CODES.OK,
+          true
         );
       } catch (error) {
         util.handleError(req, res, error);
@@ -34,9 +35,10 @@ module.exports = (app) => {
       util.response(
         res,
         response,
-        "Success",
+
         apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
-        apiConstants.RESPONSE_STATUS.SUCCESS
+        apiConstants.RESPONSE_CODES.OK,
+        true
       );
     } catch (error) {
       util.handleError(req, res, error);
