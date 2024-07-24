@@ -1,3 +1,4 @@
+const { isEmpty } = require("validate.js");
 const { DB } = require("../../../../config/db/conn");
 const { ErrorHandler } = require("../../../../handler/error");
 const MidtransClient = require("../../../../service/midtrans_handler");
@@ -12,6 +13,51 @@ class BookingQueryHandler {
     try {
       var response = await query.getAllBookingList();
       return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async getBookingByTanggal(params) {
+    try {
+      var response = await query.getBookingByTanggal(params);
+    
+      return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async getBookingList(body) {
+    const { filterTanggal } = body;
+
+    try {
+      var response;
+      if (
+        typeof filterTanggal === undefined ||
+        filterTanggal == null ||
+        isEmpty(filterTanggal)
+      ) {
+        response = await this.getAllBookingList();
+      } else {
+        response = await query.getBookingList(body);
+      }
+      var res = [];
+      for (let i = 0; i < response.length; i++) {
+        res.push({
+          no: i + 1,
+          bookingId: response[i].booking_id,
+          tanggalBooking:
+            util.formattedDate(new Date(response[i].tanggal_booking)) +
+            " " +
+            response[i].jam_booking,
+          transaksiId: response[i].transaksi_id,
+          produkId: response[i].product_id,
+          namaPenyewa: response[i].nama_penyewa,
+          noHp: response[i].no_hp,
+          lamaSewa: response[i].total_lama_sewa,
+          noMeja: response[i].nama,
+        });
+      }
+      return res;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }

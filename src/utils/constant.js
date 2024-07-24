@@ -1,8 +1,8 @@
 require("dotenv").config();
 const apiConstants = {
-  GMAIL_OTP :{
-    GMAIL : process.env.GMAIL_SENDER,
-    PASS: process.env.GMAIL_APP_PASS
+  GMAIL_OTP: {
+    GMAIL: process.env.GMAIL_SENDER,
+    PASS: process.env.GMAIL_APP_PASS,
   },
   MIDTRANS_KEY: {
     MERCHANT_ID: process.env.MIDTRANS_MERCHANT_ID,
@@ -59,6 +59,8 @@ const apiConstants = {
   },
   SUCCESS_MESSAGE: {
     FETCH_SUCCESS: "Information fetched successfully",
+    DELETE_SUCCESS: "Delete item successfully",
+    INSERT_SUCCESS: "Insert item successfully",
   },
   FAILED_MESSAGE: {
     INVALID_PARAMS: "Invalid Parameters",
@@ -78,9 +80,25 @@ const DB_ENVIRONMENT = {
   DB_PASS: process.env.POSTGRE_PASSWORD,
   DB_DATABASE: process.env.POSTGRE_DATABASE,
   DB_PORT: process.env.POSTGRE_PORT,
-  DB_SSL : process.env.POSTGRE_SSL
+  DB_SSL: process.env.POSTGRE_SSL,
+};
+const JAM_AVAILABLE = {
+  JAM: [
+    "11:00 - 12:00",
+    "12:00 - 13:00",
+    "13:00 - 14:00",
+    "14:00 - 15:00",
+    "15:00 - 16:00",
+    "16:00 - 17:00",
+    "17:00 - 18:00",
+    "18:00 - 19:00",
+    "19:00 - 20:00",
+    "20:00 - 21:00",
+    "21:00 - 22:00",
+  ],
 };
 module.exports = {
   apiConstants,
   DB_ENVIRONMENT,
+  JAM_AVAILABLE,
 };

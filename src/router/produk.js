@@ -1,4 +1,3 @@
-const passport = require("passport");
 const { authenticateToken } = require("../middleware/authentication");
 const { util, apiConstants } = require("../utils");
 const multer = require("multer");
@@ -29,6 +28,20 @@ module.exports = (app) => {
       }
     }
   );
+  app.post("/v1/product/addJamAvailable", async (req, res) => {
+    try {
+      var response = await apiHandler.produkHandler.command.addJamAvailable();
+      util.response(
+        res,
+        response,
+        apiConstants.SUCCESS_MESSAGE.INSERT_SUCCESS,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
+  //
   app.get("/v1/product/getAllPhoto", authenticateToken, async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getPhoto();
@@ -60,16 +73,13 @@ module.exports = (app) => {
       util.handleError(req, res, error);
     }
   });
-
   app.get(
-    "/v1/product/getAllAvailable",
+    "/v1/product/getProdukJamAvailable",
     authenticateToken,
     async (req, res) => {
       try {
         var response =
-          await apiHandler.produkHandler.query.getAllAvailableProduct(
-            req.query
-          );
+          await apiHandler.produkHandler.query.getProdukJamAvailable(req.body);
         util.response(
           res,
           response,
@@ -82,7 +92,22 @@ module.exports = (app) => {
       }
     }
   );
-  app.get("/v1/product/getAll",authenticateToken, async (req, res) => {
+  app.get("/v1/product/getAllAvailable", async (req, res) => {
+    try {
+      var response =
+        await apiHandler.produkHandler.query.getAllAvailableProduct(req.query);
+      util.response(
+        res,
+        response,
+        "Successfully",
+        apiConstants.RESPONSE_CODES.OK,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
+  app.get("/v1/product/getAll", async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getAll();
       util.response(
@@ -105,6 +130,22 @@ module.exports = (app) => {
         res,
         response,
         "Successfully",
+        apiConstants.RESPONSE_CODES.OK,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
+  app.post("/v1/product/getProdukJamAvailable", async (req, res) => {
+    try {
+      var response = await apiHandler.produkHandler.query.getProdukJamAvailable(
+        req.body
+      );
+      util.response(
+        res,
+        response,
+        apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
         apiConstants.RESPONSE_CODES.OK,
         true
       );

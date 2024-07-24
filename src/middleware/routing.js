@@ -4,7 +4,7 @@ const transaksiRoute = require("../router/transaksi");
 const productRoute = require("../router/produk");
 const { util } = require("../utils");
 const bookingRoute = require("../router/booking");
-
+const excelRoute = require("../router/excel");
 const validate = async (schema, req, res, next) => {
   try {
     await schema.validate(req.body, { abortEarly: false });
@@ -28,6 +28,9 @@ const routing = async (req, res, app) => {
   }
   if (req.path.includes("/booking")) {
     bookingRoute(app);
+  }
+  if (req.path.includes("/excel")) {
+    excelRoute(app);
   }
 };
 module.exports = {

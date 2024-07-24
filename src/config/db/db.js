@@ -1,6 +1,7 @@
 const { pgConfig } = require("../index");
 const { util } = require("../../utils");
 const { DB } = require("./conn");
+const { ErrorHandler } = require("../../handler/error");
 
 const dbQuery = async (query) => {
   try {
@@ -16,9 +17,10 @@ const dbQuery = async (query) => {
         client.query(query, (err, result) => {
           client.release();
           if (err) {
-            reject(console.log(`Postgres Connection: ${err.message}`));
+            reject(console.log(err));
           } else {
             const { rows } = result;
+
             resolve(rows);
           }
         });
@@ -28,8 +30,7 @@ const dbQuery = async (query) => {
       return err;
     });
   } catch (error) {
-    console.log(error);
-    return error;
+    throw new ErrorHandler.ServerError(error);
   }
 };
 module.exports = { dbQuery };

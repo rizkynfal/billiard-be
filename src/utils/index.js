@@ -5,6 +5,7 @@ const {
   commandInsertSQL,
   commandDeleteSQL,
 } = require("./sqlQuery");
+const date = require("date-and-time");
 
 require("./constant");
 class Utils {
@@ -20,6 +21,11 @@ class Utils {
       data: data,
     };
     res.status(status).json(responseObj);
+  }
+  responseFile(res, path, status) {
+    res.status(status).sendFile(`${path}`, {
+      root: "./src/public",
+    });
   }
   handleError(req, res, err) {
     if (!res) return false;
@@ -105,7 +111,22 @@ class Utils {
     };
     return options;
   }
-
+  // date
+  formattedDateAndTime(input) {
+    return input
+      ? date.format(new Date(input), "DD/MM/YYYY HH:mm:ss")
+      : date.format(new Date(), "DD/MM/YYYY HH:mm:ss");
+  }
+  formattedDate(input) {
+    return input
+      ? date.format(new Date(input), "DD/MM/YYYY")
+      : date.format(new Date(), "DD/MM/YYYY");
+  }
+  formattedTime(input) {
+    return input
+      ? date.format(new Date(input), "HH:mm:ss")
+      : date.format(new Date(), "HH:mm:ss");
+  }
   // query
   queryGetAllSQL(table) {
     return queryGetAllSQL(table);

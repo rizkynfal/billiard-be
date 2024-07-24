@@ -14,6 +14,13 @@ class ProdukQueryModel {
     });
     return userSchema.validate(user);
   }
+  validateParamFindJam(data) {
+    const paramSchema = joi.object({
+      produkId: joi.string().required(),
+      tanggal: joi.string().required(),
+    });
+    return paramSchema.validate(data);
+  }
 }
 
 module.exports = ProdukQueryModel;

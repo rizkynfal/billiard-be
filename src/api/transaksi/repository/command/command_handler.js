@@ -8,27 +8,33 @@ const BookingCommandHandler = require("../../../booking/repository/command/comma
 const { util } = require("../../../../utils");
 const model = new TransaksiCommandModel();
 const command = new TransaksiCommand();
-
+const date = require("date-and-time");
+const { isEmpty } = require("validate.js");
 class TransaksiCommandHandler {
-  constructor() {
-    this.db = new DB();
-  }
+  constructor() {}
 
   async createTransaksi(body) {
-    const { email, nama, noHp, tanggal_transaksi, produk } = body;
+    const { email, nama, noHp, tglTransaksi, produk } = body;
 
     const userhandler = new UserQueryHandler();
     const user = await userhandler.findUserByEmail(body);
 
+    const tanggal = tglTransaksi
+      ? tglTransaksi.split(" ")[0].toString()
+      : util.formattedDate();
+
+    const jamTransaksi = tglTransaksi
+      ? tglTransaksi.split(" ")[1].toString()
+      : util.formattedTime();
     var price = 0;
+
     var lamaSewa =
       produk.jamMain.length > 1
         ? produk.jamMain.length
-        : parseInt(produk.jamMain.last.split("-")[0].split(":")[0]) -
+        : parseInt(produk.jamMain[0].split("-")[1].split(":")[0]) -
           parseInt(produk.jamMain[0].split("-")[0].split(":")[0]);
 
-    price = produk.harga * lamaSewa;
-
+    price = produk.totalHarga;
     const data = {
       email: email,
       produk: produk,
@@ -57,12 +63,13 @@ class TransaksiCommandHandler {
       var dataTr = {
         transaksiId: midtrans.order_id,
         userId: user[0].user_id,
-        tanggalTransaksi: tanggal_transaksi,
+        tanggalTransaksi: tanggal,
+        jamTransaksi: jamTransaksi,
         status: status,
         paymentMethod: midtrans.payment_type,
         lamaSewa: lamaSewa,
         price: price,
-        produk: produk,
+        produk: JSON.stringify(produk),
         nama: nama,
         noHp: noHp,
       };
@@ -84,20 +91,32 @@ class TransaksiCommandHandler {
                   lamaSewa: lamaSewa,
                   userId: user[0].user_id,
                   produkId: produk.produk_id,
-                  tanggalBooking: tanggal_transaksi,
+                  tanggalBooking: tanggal,
                   transaksiId: midtrans.order_id,
+                  jamBooking: jamTransaksi,
                 });
+
                 await this.updateTransaksiStatus({
                   transaksi_id: midtrans.order_id,
                   status: "Success",
-                  payment_method: e.issuer,
+                  payment_method:
+                    typeof e.issuer === undefined || e.issuer == null
+                      ? "-"
+                      : e.issuer,
                 });
                 clearInterval(interval);
               } else {
                 await this.updateTransaksiStatus({
                   transaksi_id: midtrans.order_id,
-                  status: e.transaction_status,
-                  payment_method: e.issuer,
+                  status:
+                    typeof e.transaction_status === undefined ||
+                    e.transaction_status == null
+                      ? "failed"
+                      : e.transaction_status,
+                  payment_method:
+                    typeof e.issuer === undefined || e.issuer == null
+                      ? "-"
+                      : e.issuer,
                 });
               }
               interval;
@@ -111,15 +130,15 @@ class TransaksiCommandHandler {
       });
 
       return {
-        res: {
+        transaksi: {
           transaksiId: midtrans.order_id,
           email: user[0].email,
-          date_transaction: tanggal_transaksi,
+          date_transaction: tanggal,
           product: produk,
           total_price: price,
           status: status,
         },
-        response,
+        responseMidtrans: { response },
       };
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -137,6 +156,27 @@ class TransaksiCommandHandler {
     try {
       await command.updateTransaksiStatus(data);
       return { data: "sukses" };
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async deleteTransaksiById(params) {
+    const { transaksiId } = params;
+    if (typeof transaksiId === undefined || isEmpty(transaksiId)) {
+      throw new ErrorHandler.BadRequestError("Invalid Transaksi Id");
+    }
+
+    try {
+      var response = await command.deleteTransaksiById(params);
+      return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async deleteTransaksiAll() {
+    try {
+      var response = await command.deleteAllTransaksi();
+      return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }

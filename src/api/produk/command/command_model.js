@@ -3,7 +3,7 @@ const joi = require("joi");
 class ProdukCommandModel {
   constructor() {
     this.produkSchema = joi.object({
-      nama: joi.string().required(),
+      noMeja: joi.required(),
       harga: joi.number().required(),
       deskripsi: joi.string().allow(null),
       foto_produk: joi
@@ -13,7 +13,7 @@ class ProdukCommandModel {
             .valid("image/png", "image/jpeg", "image/jpg")
             .allow(null),
         })
-        .unknown(true),
+       
     });
   }
   validateUserInput(produk) {

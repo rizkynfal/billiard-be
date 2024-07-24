@@ -6,15 +6,7 @@ const { apiHandler } = require("../api/api_handler");
 
 module.exports = (app) => {
   app.use(bodyParser.json());
-  app.get("/v1/transaksi/getAll", authenticateToken, async (req, res) => {
-    try {
-      var response =
-        await apiHandler.transaksiHandler.query.getAllTransaksiList();
-      util.response(res, response, "Success", 200, true);
-    } catch (error) {
-      util.handleError(req, res, error);
-    }
-  });
+  // create endpoint
   app.post(
     "/v1/transaksi/createTransaksi",
     authenticateToken,
@@ -23,6 +15,23 @@ module.exports = (app) => {
         var response =
           await apiHandler.transaksiHandler.command.createTransaksi(req.body);
 
+        util.response(res, response, "Success", 200, true);
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
+    }
+  );
+  //
+
+  // get endpoint
+  app.get(
+    "/v1/transaksi/getTransaksiList",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response = await apiHandler.transaksiHandler.query.getTransaksiList(
+          req.body
+        );
         util.response(res, response, "Success", 200, true);
       } catch (error) {
         util.handleError(req, res, error);
@@ -72,6 +81,48 @@ module.exports = (app) => {
           res,
           response,
           apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
+          200,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
+    }
+  );
+  //
+  // delete endpoint
+  app.delete(
+    "/v1/transaksi/deleteTransaksi",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response =
+          await apiHandler.transaksiHandler.command.deleteTransaksiById(
+            req.query
+          );
+        util.response(
+          res,
+          response,
+          apiConstants.SUCCESS_MESSAGE.DELETE_SUCCESS,
+          200,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
+    }
+  );
+  app.delete(
+    "/v1/transaksi/deleteAllTransaksi",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response =
+          await apiHandler.transaksiHandler.command.deleteTransaksiAll();
+        util.response(
+          res,
+          response,
+          apiConstants.SUCCESS_MESSAGE.DELETE_SUCCESS,
           200,
           true
         );

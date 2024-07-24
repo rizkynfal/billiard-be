@@ -9,7 +9,7 @@ const pgConfig = {
   database: DB_ENVIRONMENT.DB_DATABASE,
   password: DB_ENVIRONMENT.DB_PASS,
   port: DB_ENVIRONMENT.DB_PORT,
-  ssl: true,
+  ssl: false,
 };
 module.exports = {
   port,

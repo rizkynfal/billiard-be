@@ -13,7 +13,14 @@ class BookingCommandHandler {
   }
 
   async createBooking(body) {
-    const { lamaSewa, userId, produkId, tanggalBooking, transaksiId } = body;
+    const {
+      lamaSewa,
+      userId,
+      produkId,
+      tanggalBooking,
+      transaksiId,
+      jamBooking,
+    } = body;
 
     if (!userId) {
       throw new ErrorHandler.ForbiddenError();
@@ -28,6 +35,7 @@ class BookingCommandHandler {
         produkId: produkId,
         tanggalBooking: tanggalBooking,
         transaksiId: transaksiId,
+        jamBooking: jamBooking,
       };
       await command.createBooking(data);
 
@@ -37,7 +45,7 @@ class BookingCommandHandler {
           lamaSewa: lamaSewa,
           userId: userId,
           produkId: produkId,
-          tanggalBooking: tanggalBooking,
+          tanggalBooking: tanggalBooking + jamBooking,
         },
       };
     } catch (error) {

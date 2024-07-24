@@ -4,49 +4,50 @@ class ProdukQuery {
   constructor() {}
 
   async getAllProduct() {
-    try {
-      const query = "SELECT * FROM product_tb";
-      const res = await pg.dbQuery(query);
-      return res;
-    } catch (error) {
-      throw new ErrorHandler.ServerError(error);
-    }
+    const query = "SELECT * FROM product_tb";
+    const res = await pg.dbQuery(query);
+    return res;
   }
   async getAllPhoto() {
-    try {
-      const query = `SELECT mime_type,foto_product FROM product_tb GROUP BY product_id`;
-      const res = await pg.dbQuery(query);
-      return res;
-    } catch (error) {
-      throw new ErrorHandler.ServerError(error);
-    }
+    const query = `SELECT mime_type,foto_product FROM product_tb GROUP BY product_id`;
+    const res = await pg.dbQuery(query);
+    return res;
   }
   async getPhotoById(data) {
-    try {
-      const query = `SELECT mime_type,foto_product FROM product_tb WHERE product_id ='${data.produkId}'`;
-      const res = await pg.dbQuery(query);
-      return res;
-    } catch (error) {
-      throw new ErrorHandler.ServerError(error);
-    }
+    const query = `SELECT mime_type,foto_product FROM product_tb WHERE product_id ='${data.produkId}'`;
+    const res = await pg.dbQuery(query);
+    return res;
   }
   async getProductByNama(data) {
+    const query = `SELECT nama FROM product_tb WHERE nama ILIKE '${data.nama}'`;
+    const res = await pg.dbQuery(query);
+    return res;
+  }
+  async getProductById(data) {
+    const query = `SELECT * FROM product_tb WHERE product_id = '${data.produkId}'`;
+    const res = await pg.dbQuery(query);
+    return res;
+  }
+  async getUsedProduk() {
     try {
-      const query = `SELECT nama FROM product_tb WHERE nama LIKE '${data.nama}'`;
+      const query = `SELECT DISTINCT a.product_id, a.nama FROM product_tb a JOIN booking_tb b ON b.product_id = a.product_id`;
       const res = await pg.dbQuery(query);
       return res;
-    } catch (error) {
-      throw new ErrorHandler.ServerError(error);
+    } catch (err) {
+      throw new ErrorHandler.ServerError(err);
     }
   }
   async getAllAvailableProduct(data) {
-    try {
-      const query = `SELECT DISTINCT a.product_id,a.nama,a.deskripsi FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking LIKE '${data.tanggal}' || '%')b ON b.product_id <> a.product_id ORDER BY a.product_id`;
-      const res = await pg.dbQuery(query);
-      return res;
-    } catch (error) {
-      throw new ErrorHandler.ServerError(error);
-    }
+    const query = `SELECT DISTINCT a.product_id, a.nama, a.harga, a.deskripsi, a.foto_product, a.mime_type FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking = '${data.tanggal}')b ON b.product_id <> a.product_id ORDER BY a.nama`;
+
+    const res = await pg.dbQuery(query);
+    return res;
   }
+  async getProdukJamAvailable(data){
+    const query = `SELECT * FROM product_time_item_tb WHERE product_id = ${data.id} AND tanggal =${data.tanggal}`
+    const res = await pg.dbQuery(query)
+    return   res
+  }
+  
 }
 module.exports = ProdukQuery;

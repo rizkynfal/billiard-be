@@ -1,5 +1,4 @@
 const { util, apiConstants } = require("../utils/index");
-const { ErrorHandler } = require("../handler/error");
 const bodyParser = require("body-parser");
 const { authenticateToken } = require("../middleware/authentication");
 const { apiHandler } = require("../api/api_handler");
@@ -15,7 +14,13 @@ module.exports = (app) => {
           await apiHandler.bookingHandler.query.getBookingByTransaksiId(
             req.query.transaksiId
           );
-        util.response(res, response, "Success", 200, true);
+        util.response(
+          res,
+          response,
+          "Success",
+          apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
+          apiConstants.RESPONSE_STATUS.SUCCESS
+        );
       } catch (error) {
         util.handleError(req, res, error);
       }
@@ -26,14 +31,22 @@ module.exports = (app) => {
       var response = await apiHandler.bookingHandler.query.getBookingById(
         req.query.bookingId
       );
-      util.response(res, response, "Success", 200, true);
+      util.response(
+        res,
+        response,
+        "Success",
+        apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
+        apiConstants.RESPONSE_STATUS.SUCCESS
+      );
     } catch (error) {
       util.handleError(req, res, error);
     }
   });
-  app.get("/v1/booking/getAll", authenticateToken, async (req, res) => {
+  app.get("/v1/booking/getBookingList", authenticateToken, async (req, res) => {
     try {
-      var response = await apiHandler.bookingHandler.query.getAllBookingList();
+      var response = await apiHandler.bookingHandler.query.getBookingList(
+        req.body
+      );
       util.response(res, response, "Success", 200, true);
     } catch (error) {
       util.handleError(req, res, error);

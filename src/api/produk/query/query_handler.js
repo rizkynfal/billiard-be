@@ -3,7 +3,13 @@ const ProdukQuery = require("./query");
 const { ErrorHandler } = require("../../../handler/error");
 const { DB } = require("../../../config/db/conn");
 const { util } = require("../../../utils");
-
+const BookingQueryHandler = require("../../booking/repository/query/query_handler");
+const { isEmpty } = require("validate.js");
+const {
+  transaksiHandler,
+} = require("../../transaksi/repository/transaksi_handler");
+const { JAM_AVAILABLE } = require("../../../utils/constant");
+const bookingQuery = new BookingQueryHandler();
 class ProdukQueryHandler {
   constructor() {
     this.db = new DB();
@@ -16,7 +22,13 @@ class ProdukQueryHandler {
     };
 
     try {
-      var responses = await this.handler.getAllAvailableProduct(data);
+      const dataBookingByTanggal = await bookingQuery.getBookingByTanggal(data);
+      var responses;
+      if (isEmpty(dataBookingByTanggal)) {
+        responses = await this.getAll();
+      } else {
+        responses = await this.handler.getAllAvailableProduct(data);
+      }
       return responses;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
@@ -37,16 +49,24 @@ class ProdukQueryHandler {
     try {
       var response = await this.handler.getAllProduct();
       var res = [];
-      for (let i = 0; i < response.length; i++) {
-        res.push({
-          no: i + 1,
-          produkId: response[i].product_id,
-          nama: response[i].nama,
-          harga: response[i].harga,
-          deskripsi: response[i].deskripsi,
-        });
-      }
-      return res;
+      // for (let i = 0; i < response.length; i++) {
+      //   res.push({
+      //     no: i + 1,
+      //     produkId: response[i].product_id,
+      //     nama: response[i].nama,
+      //     harga: response[i].harga,
+      //     deskripsi: response[i].deskripsi,
+      //   });
+      // }
+      return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async getProdukById(param) {
+    try {
+      var response = await this.handler.getProductById(param);
+      return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }
@@ -76,6 +96,53 @@ class ProdukQueryHandler {
         mimeType: response[0].mime_type,
         fotoProduk: response[0].foto_product,
       };
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async getProdukJamAvailable(param) {
+    const { error } = this.model.validateParamFindJam(param);
+    if (error) {
+      throw new ErrorHandler.BadRequestError(error);
+    }
+
+    try {
+      var response = { produk: "", jamAvail: [] };
+      const transaksiData = await transaksiHandler.query.getTransactionTglPRid(
+        param
+      );
+      var dataProduk = await this.handler.getProductById(param);
+      var defaultJam = JAM_AVAILABLE.JAM;
+      response = {
+        produk: dataProduk,
+      };
+
+      if (!isEmpty(transaksiData)) {
+        for (let i = 0; i < transaksiData.length; i++) {
+          var booked = JSON.parse(transaksiData[i].booked);
+          if (!isEmpty(booked)) {
+            for (let j = 0; j < booked.length; j++) {
+              var sameData = defaultJam.indexOf(booked[j]) || null;
+              if (sameData > 0) {
+                var index = defaultJam.indexOf(booked[j]);
+                defaultJam.splice(index, 1);
+              }
+            }
+          }
+        }
+        response.jamAvail = defaultJam;
+      } else {
+        response.jamAvail = defaultJam;
+      }
+      return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
+  async usedProduk() {
+    try {
+      var response = await this.handler.getUsedProduk();
+      return response;
     } catch (error) {
       throw new ErrorHandler.ServerError(error);
     }
