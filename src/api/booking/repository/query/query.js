@@ -25,11 +25,18 @@ class BookingQuery {
     return res;
   }
   async getBookingList(data) {
-    const query = `SELECT * FROM booking_tb WHERE tanggal_booking BETWEEN '${
+    var query = `SELECT a.booking_id, a.tanggal_booking, a.jam_booking, b.email, b.nama as nama_penyewa, b.no_hp,c.transaksi_id, d.product_id, c.total_lama_sewa, d.nama, (c.produk::json->'jamMain')::varchar as booked FROM booking_tb a `;
+    if (data.namaPenyewa) {
+      query += ` JOIN user_tb b ON b.nama ILIKE '%${data.namaPenyewa}%'`;
+    } else {
+      query += `JOIN user_tb b ON b.user_id = a.user_id`;
+    }
+    query += ` JOIN transaksi_tb c ON a.transaksi_id = c.transaksi_id 
+    JOIN product_tb d ON a.product_id = d.product_id WHERE a.tanggal_booking BETWEEN '${
       data.filterTanggal.split(" - ")[0]
     }' AND '${
       data.filterTanggal.split(" - ")[1]
-    }' ORDER BY tanggal_booking ASC`;
+    }' ORDER BY a.tanggal_booking ASC`;
     const res = await pg.dbQuery(query);
     return res;
   }

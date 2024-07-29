@@ -27,7 +27,7 @@ class BookingQueryHandler {
     }
   }
   async getBookingList(body) {
-    const { filterTanggal } = body;
+    const { filterTanggal, namaPenyewa } = body;
 
     try {
       var response;
@@ -80,7 +80,7 @@ class BookingQueryHandler {
       const data = {
         bookingId: param,
       };
-      console.log(param)
+      console.log(param);
       var response = await query.getBookingByBookingId(data);
       return response;
     } catch (error) {

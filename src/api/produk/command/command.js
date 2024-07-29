@@ -1,6 +1,7 @@
 const { ErrorHandler } = require("../../../handler/error");
 const ProdukQueryHandler = require("../query/query_handler");
 const pg = require("../../../config/db/db");
+const { isEmpty } = require("validate.js");
 class ProdukCommand {
   constructor() {}
   async createProduk(data) {
@@ -25,6 +26,57 @@ class ProdukCommand {
 
   async deleteProdukById(data) {
     const query = `DELETE FROM product_tb WHERE product_id = '${data.produkId}'`;
+    const res = await pg.dbQuery(query);
+    return res;
+  }
+  async updateProduk(data) {
+    let query = `UPDATE product_tb `;
+    var count = 0;
+
+    if (typeof data.nama !== "undefined" && !isEmpty(data.nama)) {
+      if (count == 0) {
+        query = query + `SET  nama = 'MEJA ${data.nama}'`;
+      } else {
+        query = query + `,nama = 'MEJA ${data.nama}'`;
+      }
+      count++;
+    }
+    console.log(
+      typeof data.harga !== "undefined" &&
+        !isEmpty(data.harga) &&
+        typeof data.harga !== "NaN" &&
+        data.harga !== null + " " + data.harga
+    );
+    if (data.harga) {
+      if (count == 0) {
+        query = query + `SET  harga = '${data.harga}'`;
+      } else {
+        query = query + `,harga = '${data.harga}'`;
+      }
+      count++;
+    }
+    if (typeof data.deskripsi !== "undefined") {
+      if (count == 0) {
+        query = query + `SET  deskripsi = '${data.deskripsi}'`;
+      } else {
+        query = query + `,deskripsi = '${data.deskripsi}'`;
+      }
+      count++;
+    }
+    if (typeof data.fotoProduk !== "undefined") {
+      if (count == 0) {
+        query =
+          query +
+          `SET foto_product = '${data.fotoProduk}', mime_type = '${data.mimeType}'`;
+      } else {
+        query =
+          query +
+          `,foto_product = '${data.fotoProduk}', mime_type = '${data.mimeType}'`;
+      }
+      count++;
+    }
+    query = query + ` WHERE product_id = '${data.produkId}'`;
+
     const res = await pg.dbQuery(query);
     return res;
   }

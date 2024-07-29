@@ -1,3 +1,4 @@
+const { isEmpty } = require("validate.js");
 const { DB } = require("../../../config/db/conn");
 const { ErrorHandler } = require("../../../handler/error");
 const { util } = require("../../../utils");
@@ -53,10 +54,12 @@ class ProdukCommandHandler {
     const data = body;
 
     let error = null;
-    error = this.model.validateUserInput(data).error;
 
+    error = this.model.validateProdukInput(data).error;
+    let errorFoto = null;
+    errorFoto = this.model.validatePhoto(file.mimetype).error;
     var namaProduk = ("MEJA " + data.noMeja).toUpperCase();
-    const harga = data.harga;
+    const harga = parseFloat(data.harga);
     const deskripsi = data.deskripsi;
     const mimeType = file.mimetype;
 
@@ -64,9 +67,10 @@ class ProdukCommandHandler {
     if (duplicateName.length > 0) {
       throw new errorHandler.BadRequestError(`Produk ${namaProduk} Telah Ada`);
     }
-    if (error) {
-      throw new errorHandler.BadRequestError(error);
-    } else {
+    if (error || errorFoto) {
+      throw new errorHandler.BadRequestError(error ?? errorFoto);
+    }
+    try {
       const totalProduk = await queryHandler.getAll();
       const hashedId = util.generateRandomNumber();
       const productId = "PR-" + (totalProduk.length + 1) + "-" + hashedId;
@@ -81,27 +85,78 @@ class ProdukCommandHandler {
         fotoProduk: base64Image,
         mimeType: mimeType,
       };
-
-      try {
-        await command.createProduk(data).catch((err) => {
-          throw new errorHandler.ServerError(err);
-        });
-        return {
-          data: data,
-        };
-      } catch (error) {
-        throw new errorHandler.ServerError(error);
-      }
+      var response = await command.createProduk(data).catch((err) => {
+        throw new errorHandler.ServerError(err);
+      });
+      return {
+        data: data,
+        response,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new errorHandler.ServerError(error);
     }
   }
   async deleteProduk(body) {
     const data = body;
+    let error = null;
+
+    error = this.model.validateProdukId(data).error;
+    if (error) {
+      throw new errorHandler.BadRequestError(error);
+    }
     try {
       const produkUsed = await queryHandler.usedProduk();
       var response = produkUsed.find((e) => e.product_id == data.produkId)
         ? command.updateProdukById({ produkId: data.produkId })
         : command.deleteProdukById({ produkId: data.produkId });
       return { deletedData: response };
+    } catch (error) {
+      throw new errorHandler.ServerError(error);
+    }
+  }
+  async updateProduk(body, file) {
+    const data = body;
+
+    let error = null;
+    let mimeType;
+    let base64Image;
+
+    if (file !== null && !isEmpty(file) && typeof file !== "undefined") {
+      mimeType = file.mimetype;
+      base64Image = file.buffer.toString("base64");
+    }
+    error = this.model.validateProdukUpdate(data).error;
+    let errorFoto = null;
+    errorFoto = this.model.validatePhoto(mimeType).error;
+    var namaProduk = ("MEJA " + data.noMeja).toUpperCase();
+    const harga = parseFloat(data.harga);
+    const deskripsi = data.deskripsi;
+
+    const duplicateName = await queryHandler.getByNama(namaProduk);
+    if (duplicateName.length > 0) {
+      throw new errorHandler.BadRequestError(`Produk ${namaProduk} Telah Ada`);
+    }
+    if (error || errorFoto) {
+      throw new errorHandler.BadRequestError(error ?? errorFoto);
+    }
+    try {
+      const dataProduk = {
+        produkId: data.produkId,
+        nama: data.noMeja,
+        harga: harga,
+        deskripsi: deskripsi,
+        isDeleted: false,
+        fotoProduk: base64Image,
+        mimeType: mimeType,
+      };
+      var response = await command.updateProduk(dataProduk).catch((err) => {
+        throw new errorHandler.ServerError(err);
+      });
+      return {
+        data: dataProduk,
+        response,
+      };
     } catch (error) {
       throw new errorHandler.ServerError(error);
     }

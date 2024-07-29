@@ -61,6 +61,7 @@ const apiConstants = {
     FETCH_SUCCESS: "Information fetched successfully",
     DELETE_SUCCESS: "Delete item successfully",
     INSERT_SUCCESS: "Insert item successfully",
+    UPDATE_SUCCESS: "update item successfully",
   },
   FAILED_MESSAGE: {
     INVALID_PARAMS: "Invalid Parameters",

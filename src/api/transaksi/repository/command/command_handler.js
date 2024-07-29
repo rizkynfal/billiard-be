@@ -70,8 +70,8 @@ class TransaksiCommandHandler {
         lamaSewa: lamaSewa,
         price: price,
         produk: JSON.stringify(produk),
-        nama: nama,
-        noHp: noHp,
+        nama: nama ?? user[0].nama,
+        noHp: noHp ?? user[0].no_hp,
       };
 
       const book = new BookingCommandHandler();

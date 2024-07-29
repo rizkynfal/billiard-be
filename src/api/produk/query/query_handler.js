@@ -70,9 +70,9 @@ class ProdukQueryHandler {
       throw new ErrorHandler.ServerError(error);
     }
   }
-  async getAll() {
+  async getAll(data) {
     try {
-      var response = await this.query.getAllProduct();
+      var response = await this.query.getAllProduct(data);
       var res = [];
       // for (let i = 0; i < response.length; i++) {
       //   res.push({

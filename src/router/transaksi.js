@@ -69,6 +69,36 @@ module.exports = (app) => {
     }
   );
   app.get(
+    "/v1/transaksi/getTransaksiByTanggal",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response =
+          await apiHandler.transaksiHandler.query.getTransactionByTanggal(
+            req.query
+          );
+        util.response(res, response, "Success", 200, true);
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
+    }
+  );
+  app.get(
+    "/v1/transaksi/getTransaksiByUserIdAndTanggal",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response =
+          await apiHandler.transaksiHandler.query.getTransactionUsrIdAndTanggal(
+            req.query
+          );
+        util.response(res, response, "Success", 200, true);
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
+    }
+  );
+  app.get(
     "/v1/transaksi/getStatusById",
     authenticateToken,
     async (req, res) => {
@@ -131,4 +161,20 @@ module.exports = (app) => {
       }
     }
   );
+  // pdf
+  app.get("/v1/transaksi/getInvoicePdf",authenticateToken, async (req, res) => {
+    try {
+      await apiHandler.transaksiHandler.query
+        .getTransactionPdf(req.query)
+        .then(() => {
+          util.responseFile(
+            res,
+            "/invoice.pdf",
+            apiConstants.RESPONSE_CODES.OK
+          );
+        });
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
 };

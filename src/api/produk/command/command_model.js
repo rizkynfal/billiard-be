@@ -4,20 +4,41 @@ class ProdukCommandModel {
   constructor() {
     this.produkSchema = joi.object({
       noMeja: joi.required(),
-      harga: joi.number().required(),
+      harga: joi
+        .string()
+        .pattern(/^[0-9]+$/)
+        .required(),
       deskripsi: joi.string().allow(null),
-      foto_produk: joi
-        .object({
-          mimetype: joi
-            .string()
-            .valid("image/png", "image/jpeg", "image/jpg")
-            .allow(null),
-        })
-       
     });
   }
-  validateUserInput(produk) {
+  validateProdukInput(produk) {
     return this.produkSchema.validate(produk);
+  }
+  validatePhoto(data) {
+    var fotoSchema = joi
+      .string()
+      .valid("image/png", "image/jpeg", "image/jpg", "image/webp")
+      .allow(null);
+
+    return fotoSchema.validate(data);
+  }
+  validateProdukId(data) {
+    var dataSchema = joi.object({
+      produkId: joi.string().required(),
+    });
+    return dataSchema.validate(data);
+  }
+  validateProdukUpdate(data) {
+    var produkSchema = joi.object({
+      produkId: joi.string().required(),
+      noMeja: joi.string().allow(null),
+      harga: joi
+        .string()
+        .pattern(/^[0-9]+$/)
+        .allow(null),
+      deskripsi: joi.string().allow(null),
+    });
+    return produkSchema.validate(data);
   }
 }
 

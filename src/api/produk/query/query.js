@@ -3,8 +3,11 @@ const pg = require("../../../config/db/db");
 class ProdukQuery {
   constructor() {}
 
-  async getAllProduct() {
-    const query = "SELECT * FROM product_tb";
+  async getAllProduct(data) {
+    let query = "SELECT * FROM product_tb";
+    if (data.noMeja) {
+      query += ` WHERE nama = '${"MEJA " + data.noMeja}'`;
+    }
     const res = await pg.dbQuery(query);
     return res;
   }

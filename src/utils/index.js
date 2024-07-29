@@ -15,10 +15,10 @@ class Utils {
   }
   response(res, data, message, status, success) {
     const responseObj = {
-      success: success,
-      status: status,
-      message: message,
-      data: data,
+      success: success ?? apiConstants.RESPONSE_STATUS.SUCCESS,
+      status: status ?? apiConstants.RESPONSE_CODES.OK,
+      message: message ?? apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
+      data: data ?? {},
     };
     res.status(status).json(responseObj);
   }

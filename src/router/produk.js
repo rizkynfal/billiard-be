@@ -28,6 +28,25 @@ module.exports = (app) => {
       }
     }
   );
+  app.post("/v1/product/updateProduk", upload.any(), async (req, res) => {
+    try {
+      let file = req.file ?? null;
+
+      var response = await apiHandler.produkHandler.command.updateProduk(
+        req.body,
+        file
+      );  
+      util.response(
+        res,
+        response,
+        apiConstants.SUCCESS_MESSAGE.UPDATE_SUCCESS,
+        apiConstants.RESPONSE_CODES.OK,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
+    }
+  });
   app.post("/v1/product/addJamAvailable", async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.command.addJamAvailable();
@@ -109,7 +128,7 @@ module.exports = (app) => {
   });
   app.get("/v1/product/getAll", async (req, res) => {
     try {
-      var response = await apiHandler.produkHandler.query.getAll();
+      var response = await apiHandler.produkHandler.query.getAll(req.body);
       util.response(
         res,
         response,

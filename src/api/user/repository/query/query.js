@@ -8,7 +8,7 @@ class UserQuery {
     let value = [];
     let conditions = [];
 
-    if (typeof data.email !== "undefined") {
+    if (typeof data.email !== undefined) {
       if (count == 0) {
         conditions.push(`WHERE email ILIKE  $${conditions.length + 1}`);
       } else {
@@ -17,7 +17,7 @@ class UserQuery {
       value.push(`%${data.email}%`);
       count++;
     }
-    if (typeof data.nama !== "undefined") {
+    if (typeof data.nama !== undefined) {
       if (count == 0) {
         conditions.push(`WHERE nama ILIKE  $${conditions.length + 1}`);
       } else {
