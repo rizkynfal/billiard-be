@@ -17,7 +17,7 @@ class Auth {
   }
   async register(req, res) {
     const existingUser = await queryHandler.findUserByEmail(req.body);
-    console.log(existingUser);
+
     if (existingUser[0]) {
       throw new ErrorHandler.BadRequestError("Email Already Registered");
     } else {

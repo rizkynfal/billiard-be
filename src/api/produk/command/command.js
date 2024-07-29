@@ -41,12 +41,7 @@ class ProdukCommand {
       }
       count++;
     }
-    console.log(
-      typeof data.harga !== "undefined" &&
-        !isEmpty(data.harga) &&
-        typeof data.harga !== "NaN" &&
-        data.harga !== null + " " + data.harga
-    );
+
     if (data.harga) {
       if (count == 0) {
         query = query + `SET  harga = '${data.harga}'`;

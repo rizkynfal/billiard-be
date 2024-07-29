@@ -80,7 +80,7 @@ class BookingQueryHandler {
       const data = {
         bookingId: param,
       };
-      console.log(param);
+
       var response = await query.getBookingByBookingId(data);
       return response;
     } catch (error) {

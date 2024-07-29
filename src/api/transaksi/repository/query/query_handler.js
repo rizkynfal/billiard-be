@@ -32,13 +32,14 @@ class TransaksiQueryHandler {
           isEmpty(filterTanggal)) &&
         (typeof paymentSuccess === undefined ||
           paymentSuccess == null ||
-          isEmpty(paymentSuccess))
+          (isEmpty(paymentSuccess) && !namaPenyewa))
       ) {
         response = await this.getAllTransaksiList();
       } else {
         response = await query.getTransaksiList(body);
       }
       var res = [];
+
       for (let i = 0; i < response.length; i++) {
         res.push({
           no: i + 1,

@@ -5,7 +5,7 @@ class ProdukQuery {
 
   async getAllProduct(data) {
     let query = "SELECT * FROM product_tb";
-    if (data.noMeja) {
+    if (data && data.noMeja) {
       query += ` WHERE nama = '${"MEJA " + data.noMeja}'`;
     }
     const res = await pg.dbQuery(query);

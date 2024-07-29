@@ -93,7 +93,6 @@ class ProdukCommandHandler {
         response,
       };
     } catch (error) {
-      console.log(error);
       throw new errorHandler.ServerError(error);
     }
   }
