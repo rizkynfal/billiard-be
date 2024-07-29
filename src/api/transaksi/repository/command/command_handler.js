@@ -59,7 +59,7 @@ class TransaksiCommandHandler {
       );
       var status = "pending";
       var response = await midtrans.createTransactionSnapPrefrence();
-
+      console.log(dataTr);
       var dataTr = {
         transaksiId: midtrans.order_id,
         userId: user[0].user_id,

@@ -4,7 +4,7 @@ const pg = require("../../../../config/db/db");
 class TransaksiCommand {
   constructor() {}
   async createTransaksi(data) {
-    const query = `INSERT INTO public.transaksi_tb(transaksi_id, user_id, tanggal_transaksi, status_transaksi, payment_method, total_lama_sewa, total_harga, produk, nama_penyewa, no_hp, jam_transaksi)  VALUES ('${data.transaksiId}', '${data.userId}', '${data.tanggalTransaksi}', '${data.status}', '${data.paymentMethod}', '${data.lamaSewa}', '${data.price}', '${data.produk}','${data.nama}','${data.noHp}','${data.jamTransaksi}')`;
+    const query = `SET datestyle = dmy; INSERT INTO public.transaksi_tb(transaksi_id, user_id, tanggal_transaksi, status_transaksi, payment_method, total_lama_sewa, total_harga, produk, nama_penyewa, no_hp, jam_transaksi)  VALUES ('${data.transaksiId}', '${data.userId}', '${data.tanggalTransaksi}', '${data.status}', '${data.paymentMethod}', '${data.lamaSewa}', '${data.price}', '${data.produk}','${data.nama}','${data.noHp}','${data.jamTransaksi}')`;
     const res = await pg.dbQuery(query);
     return res;
   }
