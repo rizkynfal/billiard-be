@@ -6,9 +6,9 @@ class ProdukQuery {
   async getAllProduct(data) {
     let query = "SELECT DISTINCT * FROM product_tb";
     if (data && data.noMeja) {
-      query += ` WHERE nama = '${"MEJA " + data.noMeja}'`;
+      query += ` WHERE nama = '${"MEJA " + data.noMeja}' `;
     }
-    query += "ORDER BY product_id";
+    query += " ORDER BY product_id";
     const res = await pg.dbQuery(query);
     return res;
   }
