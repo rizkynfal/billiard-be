@@ -3,11 +3,8 @@ const joi = require("joi");
 class ProdukCommandModel {
   constructor() {
     this.produkSchema = joi.object({
-      noMeja: joi.required(),
-      harga: joi
-        .string()
-        .pattern(/^[0-9]+$/)
-        .required(),
+      noMeja: joi.string(),
+      harga: joi.string().pattern(/^[0-9]+$/),
       deskripsi: joi.string().allow(null),
     });
   }
