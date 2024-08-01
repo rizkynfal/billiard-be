@@ -10,7 +10,8 @@ class TransaksiQuery {
     return res;
   }
   async getTransaksiByProdukIdAndTanggal(data) {
-    const query = `SELECT b.product_id, b.nama, b.harga, b.deskripsi, (produk::json->'jamMain')::varchar as booked FROM transaksi_tb a JOIN product_tb b ON '${data.produkId}' = SPLIT_PART((a.produk::json->'produk_id')::varchar, '"', 2) AND a.tanggal_transaksi = '${data.tanggal}' AND b.product_id = '${data.produkId}'`;
+    const query = `SELECT b.product_id, b.nama, b.harga, b.deskripsi, (produk::json->'jamMain')::varchar as booked FROM transaksi_tb a JOIN product_tb b ON '${data.produkId}' = SPLIT_PART((a.produk::json->'produk_id')::varchar, '"', 2) AND b.product_id = '${data.produkId}' AND a.tanggal_transaksi = '${data.tanggal}'`;
+
     const res = await pg.dbQuery(query);
     return res;
   }

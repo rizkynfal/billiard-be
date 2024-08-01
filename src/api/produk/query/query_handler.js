@@ -144,8 +144,10 @@ class ProdukQueryHandler {
       const transaksiData = await transaksiHandler.query.getTransactionTglPRid(
         param
       );
+
       var dataProduk = await this.query.getProductById(param);
-      var defaultJam = JAM_AVAILABLE.JAM;
+      const defaultJam = JAM_AVAILABLE.JAM;
+      var jamAvail = defaultJam;
       response = {
         produk: dataProduk,
       };
@@ -155,17 +157,17 @@ class ProdukQueryHandler {
           var booked = JSON.parse(transaksiData[i].booked);
           if (!isEmpty(booked)) {
             for (let j = 0; j < booked.length; j++) {
-              var sameData = defaultJam.indexOf(booked[j]) || null;
+              var sameData = jamAvail.indexOf(booked[j]) || null;
               if (sameData > 0) {
-                var index = defaultJam.indexOf(booked[j]);
-                defaultJam.splice(index, 1);
+                var index = jamAvail.indexOf(booked[j]);
+                jamAvail.splice(index, 1);
               }
             }
           }
         }
-        response.jamAvail = defaultJam;
+        response.jamAvail = jamAvail;
       } else {
-        response.jamAvail = defaultJam;
+        response.jamAvail = JAM_AVAILABLE.JAM;
       }
       return response;
     } catch (error) {
