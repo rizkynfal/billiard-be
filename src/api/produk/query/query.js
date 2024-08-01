@@ -42,19 +42,19 @@ class ProdukQuery {
     }
   }
   async getAllAvailableProduct(data) {
-    const query = `SELECT DISTINCT a.product_id, a.nama, a.harga, a.deskripsi, a.foto_product, a.mime_type FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking = '${data.tanggal}')b ON b.product_id <> a.product_id ORDER BY a.product_id`;
+    const query = `SELECT DISTINCT a.product_id, a.nama, a.harga, a.deskripsi, a.foto_product, a.mime_type FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking = '${data.tanggal}')b ON b.product_id <> a.product_id ORDER BY a.nama`;
 
     const res = await pg.dbQuery(query);
     return res;
   }
   async getAllBookedProduct(data) {
-    const query = `SELECT DISTINCT a.product_id, a.nama, a.harga, a.deskripsi, a.foto_product, a.mime_type FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking = '${data.tanggal}')b ON b.product_id = a.product_id ORDER BY a.product_id`;
+    const query = `SELECT DISTINCT a.product_id, a.nama, a.harga, a.deskripsi, a.foto_product, a.mime_type FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking = '${data.tanggal}')b ON b.product_id = a.product_id ORDER BY a.nama`;
 
     const res = await pg.dbQuery(query);
     return res;
   }
   async getProdukJamAvailable(data) {
-    const query = `SELECT * FROM product_time_item_tb WHERE product_id = ${data.id} AND tanggal =${data.tanggal}`;
+    const query = `SELECT * FROM product_time_item_tb WHERE product_id = ${data.id} AND tanggal =${data.tanggal} ORDER BY a.nama`;
     const res = await pg.dbQuery(query);
     return res;
   }
