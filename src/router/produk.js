@@ -28,14 +28,14 @@ module.exports = (app) => {
       }
     }
   );
-  app.post("/v1/product/updateProduk", upload.any(), async (req, res) => {
+  app.patch("/v1/product/updateProduk", upload.any(), async (req, res) => {
     try {
       let file = req.file ?? null;
 
       var response = await apiHandler.produkHandler.command.updateProduk(
         req.body,
         file
-      );  
+      );
       util.response(
         res,
         response,
