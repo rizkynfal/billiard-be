@@ -132,10 +132,10 @@ class ProdukCommandHandler {
     const harga = parseFloat(data.harga);
     const deskripsi = data.deskripsi;
 
-    const duplicateName = await queryHandler.getByNama(namaProduk);
-    if (duplicateName.length > 0) {
-      throw new errorHandler.BadRequestError(`Produk ${namaProduk} Telah Ada`);
-    }
+    // const duplicateName = await queryHandler.getByNama(namaProduk);
+    // if (duplicateName.length > 0) {
+    //   throw new errorHandler.BadRequestError(`Produk ${namaProduk} Telah Ada`);
+    // }
     if (error || errorFoto) {
       throw new errorHandler.BadRequestError(error ?? errorFoto);
     }
