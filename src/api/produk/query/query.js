@@ -8,6 +8,7 @@ class ProdukQuery {
     if (data && data.noMeja) {
       query += ` WHERE nama = '${"MEJA " + data.noMeja}'`;
     }
+    query += "ORDER BY product_id";
     const res = await pg.dbQuery(query);
     return res;
   }
