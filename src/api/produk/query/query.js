@@ -4,7 +4,7 @@ class ProdukQuery {
   constructor() {}
 
   async getAllProduct(data) {
-    let query = "SELECT * FROM product_tb";
+    let query = "SELECT DISTINCT * FROM product_tb";
     if (data && data.noMeja) {
       query += ` WHERE nama = '${"MEJA " + data.noMeja}'`;
     }
