@@ -34,6 +34,11 @@ class ProdukQuery {
     const res = await pg.dbQuery(query);
     return res;
   }
+  async getPorductByNotId(data) {
+    const query = `SELECT * FROM product_tb WHERE product_id <> '${data.produkId}' AND nama = '${data.nama}' AND is_deleted <> true`;
+    const res = await pg.dbQuery(query);
+    return res;
+  }
   async getUsedProduk() {
     try {
       const query = `SELECT DISTINCT a.product_id, a.nama FROM product_tb a JOIN booking_tb b ON b.product_id = a.product_id`;
@@ -44,7 +49,7 @@ class ProdukQuery {
     }
   }
   async getAllAvailableProduct(data) {
-    const query = `SELECT DISTINCT a.product_id, a.nama, a.harga, a.deskripsi, a.foto_product, a.mime_type FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking = '${data.tanggal}')b ON b.product_id <> a.product_id AND a.is_deleted <> true ORDER BY a.nama`;
+    const query = `SELECT DISTINCT a.product_id, a.nama, a.harga, a.deskripsi, a.foto_product, a.mime_type FROM product_tb a JOIN(SELECT * FROM booking_tb b WHERE b.tanggal_booking = '${data.tanggal}')b ON b.product_id <> a.product_id WHERE  a.is_deleted <> true ORDER BY a.nama`;
 
     const res = await pg.dbQuery(query);
     return res;

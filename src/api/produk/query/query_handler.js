@@ -96,6 +96,14 @@ class ProdukQueryHandler {
       throw new ErrorHandler.ServerError(error);
     }
   }
+  async getProdukByNotId(param) {
+    try {
+      var response = await this.query.getPorductByNotId(param);
+      return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
   async getPhoto() {
     try {
       var response = await this.query.getAllPhoto();
