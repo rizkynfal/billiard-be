@@ -1,4 +1,8 @@
-const { authenticateToken } = require("../middleware/authentication");
+const {
+  authenticateTokenCustomer,
+  authenticateToken,
+  authenticateTokenAdmin,
+} = require("../middleware/authentication");
 const { util, apiConstants } = require("../utils");
 const multer = require("multer");
 const { apiHandler } = require("../api/api_handler");
@@ -8,7 +12,7 @@ var upload = multer({ storage: storage });
 module.exports = (app) => {
   app.post(
     "/v1/product/addNew",
-    authenticateToken,
+    authenticateTokenAdmin,
     upload.single("foto_produk"),
     async (req, res) => {
       try {
@@ -28,38 +32,47 @@ module.exports = (app) => {
       }
     }
   );
-  app.patch("/v1/product/updateProduk", upload.any(), async (req, res) => {
-    try {
-      let file = req.file ?? null;
+  app.patch(
+    "/v1/product/updateProduk",
+    upload.any(),
+    authenticateTokenAdmin,
+    async (req, res) => {
+      try {
+        let file = req.file ?? null;
 
-      var response = await apiHandler.produkHandler.command.updateProduk(
-        req.body,
-        file
-      );
-      util.response(
-        res,
-        response,
-        apiConstants.SUCCESS_MESSAGE.UPDATE_SUCCESS,
-        apiConstants.RESPONSE_CODES.OK,
-        true
-      );
-    } catch (error) {
-      util.handleError(req, res, error);
+        var response = await apiHandler.produkHandler.command.updateProduk(
+          req.body,
+          file
+        );
+        util.response(
+          res,
+          response,
+          apiConstants.SUCCESS_MESSAGE.UPDATE_SUCCESS,
+          apiConstants.RESPONSE_CODES.OK,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
-  app.post("/v1/product/addJamAvailable", async (req, res) => {
-    try {
-      var response = await apiHandler.produkHandler.command.addJamAvailable();
-      util.response(
-        res,
-        response,
-        apiConstants.SUCCESS_MESSAGE.INSERT_SUCCESS,
-        true
-      );
-    } catch (error) {
-      util.handleError(req, res, error);
+  );
+  app.post(
+    "/v1/product/addJamAvailable",
+    authenticateTokenAdmin,
+    async (req, res) => {
+      try {
+        var response = await apiHandler.produkHandler.command.addJamAvailable();
+        util.response(
+          res,
+          response,
+          apiConstants.SUCCESS_MESSAGE.INSERT_SUCCESS,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
+  );
   //
   app.get("/v1/product/getAllPhoto", authenticateToken, async (req, res) => {
     try {
@@ -111,22 +124,28 @@ module.exports = (app) => {
       }
     }
   );
-  app.get("/v1/product/getAllAvailable", async (req, res) => {
-    try {
-      var response =
-        await apiHandler.produkHandler.query.getAllAvailableProduct(req.query);
-      util.response(
-        res,
-        response,
-        "Successfully",
-        apiConstants.RESPONSE_CODES.OK,
-        true
-      );
-    } catch (error) {
-      util.handleError(req, res, error);
+  app.get(
+    "/v1/product/getAllAvailable",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response =
+          await apiHandler.produkHandler.query.getAllAvailableProduct(
+            req.query
+          );
+        util.response(
+          res,
+          response,
+          "Successfully",
+          apiConstants.RESPONSE_CODES.OK,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
-  app.get("/v1/product/getAll", async (req, res) => {
+  );
+  app.get("/v1/product/getAll", authenticateToken, async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getAll(req.body);
       util.response(
@@ -140,36 +159,43 @@ module.exports = (app) => {
       util.handleError(req, res, error);
     }
   });
-  app.delete("/v1/product/deleteById", authenticateToken, async (req, res) => {
-    try {
-      var response = await apiHandler.produkHandler.command.deleteProduk(
-        req.body
-      );
-      util.response(
-        res,
-        response,
-        "Successfully",
-        apiConstants.RESPONSE_CODES.OK,
-        true
-      );
-    } catch (error) {
-      util.handleError(req, res, error);
+  app.delete(
+    "/v1/product/deleteById",
+    authenticateTokenAdmin,
+    async (req, res) => {
+      try {
+        var response = await apiHandler.produkHandler.command.deleteProduk(
+          req.body
+        );
+        util.response(
+          res,
+          response,
+          "Successfully",
+          apiConstants.RESPONSE_CODES.OK,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
-  app.post("/v1/product/getProdukJamAvailable", async (req, res) => {
-    try {
-      var response = await apiHandler.produkHandler.query.getProdukJamAvailable(
-        req.body
-      );
-      util.response(
-        res,
-        response,
-        apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
-        apiConstants.RESPONSE_CODES.OK,
-        true
-      );
-    } catch (error) {
-      util.handleError(req, res, error);
+  );
+  app.post(
+    "/v1/product/getProdukJamAvailable",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        var response =
+          await apiHandler.produkHandler.query.getProdukJamAvailable(req.body);
+        util.response(
+          res,
+          response,
+          apiConstants.SUCCESS_MESSAGE.FETCH_SUCCESS,
+          apiConstants.RESPONSE_CODES.OK,
+          true
+        );
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
+  );
 };

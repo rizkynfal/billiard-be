@@ -8,7 +8,6 @@ exports.authenticateToken = (req, res, next) => {
     util.handleError(req, res, new ErrorHandler.ForbiddenError());
   } else {
     const authHeader = req.headers["authorization"];
-
     const token = authHeader && authHeader.split(" ")[1];
 
     if (token == null)
@@ -17,31 +16,67 @@ exports.authenticateToken = (req, res, next) => {
     jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
       if (err) {
         util.handleError(req, res, new ErrorHandler.UnauthorizedError(err));
+      } else if (!(user.role === 1 || user.role === 2 || user.role === 3)) {
+        util.handleError(
+          req,
+          res,
+          new ErrorHandler.ForbiddenError("Access Denied")
+        );
       } else {
         next();
       }
     });
   }
 };
-exports.authenticateAdminToken = (req, res, next) => {
+
+exports.authenticateTokenAdmin = (req, res, next) => {
   if (!req.headers["authorization"]) {
-    util.handleError(req, res, new ErrorHandler.UnauthorizedError());
+    util.handleError(req, res, new ErrorHandler.ForbiddenError());
+  } else {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (token == null) {
+      util.handleError(req, res, new ErrorHandler.UnauthorizedError());
+    }
+
+    jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
+      if (err) {
+        util.handleError(req, res, new ErrorHandler.UnauthorizedError(err));
+      } else if (!(user.user.role === 1 || user.user.role === 2)) {
+        util.handleError(
+          req,
+          res,
+          new ErrorHandler.ForbiddenError("Access denied, Admins only")
+        );
+      } else {
+        next();
+      }
+    });
   }
-  const authHeader = req.headers["authorization"];
+};
+exports.authenticateTokenCustomer = (req, res, next) => {
+  try {
+    if (!req.headers["authorization"]) {
+      throw new ErrorHandler.UnauthorizedError();
+    } else {
+      const authHeader = req.headers["authorization"];
+      const token = authHeader && authHeader.split(" ")[1];
 
-  const token = authHeader && authHeader.split(" ")[1];
+      if (token == null) {
+        throw new ErrorHandler.UnauthorizedError();
+      }
 
-  if (token == null)
-    util.handleError(req, res, new ErrorHandler.UnauthorizedError());
-
-  jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
-    if (err) {
-      util.handleError(req, res, new ErrorHandler.UnauthorizedError(err));
+      jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
+        if (err) {
+          throw new ErrorHandler.UnauthorizedError(err);
+        } else if (!(user.user.role === 1 || user.user.role === 3)) {
+          throw new ErrorHandler.ForbiddenError("Access denied");
+        }
+        next();
+      });
     }
-
-    if (user.role != 1) {
-      util.handleError(req, res, new ErrorHandler.ForbiddenError(err));
-    }
-    next();
-  });
+  } catch (error) {
+    util.handleError(req, res, error);
+  }
 };

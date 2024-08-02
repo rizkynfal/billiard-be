@@ -20,7 +20,12 @@ class App {
     app.use(express.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
+
     app.use(cors());
+    app.use((_, res, next) => {
+      res.header("X-Service-Name", "gobill-api");
+      next();
+    });
     app.use(
       session({
         secret: apiConstants.TOKEN_SECRET.ACCESS_TOKEN,

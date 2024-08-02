@@ -1,7 +1,10 @@
 const { util, apiConstants } = require("../utils/index");
 const { ErrorHandler } = require("../handler/error");
 const bodyParser = require("body-parser");
-const { authenticateToken } = require("../middleware/authentication");
+const {
+  authenticateTokenAdmin: authenticateToken,
+  authenticateTokenCustomer,
+} = require("../middleware/authentication");
 const { apiHandler } = require("../api/api_handler");
 
 module.exports = (app) => {
@@ -9,7 +12,7 @@ module.exports = (app) => {
   // create endpoint
   app.post(
     "/v1/transaksi/createTransaksi",
-    authenticateToken,
+    authenticateTokenCustomer,
     async (req, res) => {
       try {
         var response =
@@ -162,19 +165,23 @@ module.exports = (app) => {
     }
   );
   // pdf
-  app.get("/v1/transaksi/getInvoicePdf",authenticateToken, async (req, res) => {
-    try {
-      await apiHandler.transaksiHandler.query
-        .getTransactionPdf(req.query)
-        .then(() => {
-          util.responseFile(
-            res,
-            "/invoice.pdf",
-            apiConstants.RESPONSE_CODES.OK
-          );
-        });
-    } catch (error) {
-      util.handleError(req, res, error);
+  app.get(
+    "/v1/transaksi/getInvoicePdf",
+    authenticateToken,
+    async (req, res) => {
+      try {
+        await apiHandler.transaksiHandler.query
+          .getTransactionPdf(req.query)
+          .then(() => {
+            util.responseFile(
+              res,
+              "/invoice.pdf",
+              apiConstants.RESPONSE_CODES.OK
+            );
+          });
+      } catch (error) {
+        util.handleError(req, res, error);
+      }
     }
-  });
+  );
 };

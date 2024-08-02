@@ -7,7 +7,7 @@ module.exports = (app) => {
 
   app.post(
     "/v1/user/create",
-    authenticator.authenticateToken,
+    authenticator.authenticateTokenAdmin,
     async (req, res) => {
       try {
         const users = await apiHandler.userHandler.command.createUser(req.body);
@@ -26,7 +26,7 @@ module.exports = (app) => {
 
   app.get(
     "/v1/user/search",
-    authenticator.authenticateToken,
+    authenticator.authenticateTokenAdmin,
     async (req, res) => {
       const params = req.query;
       try {
