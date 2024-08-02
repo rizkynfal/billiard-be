@@ -89,6 +89,14 @@ class TransaksiQueryHandler {
       throw new ErrorHandler.ServerError(error);
     }
   }
+  async getBookedProduk(param) {
+    try {
+      var response = await query.getTransaksiByProdukIdAndTanggalBookJoin(param);
+      return response;
+    } catch (error) {
+      throw new ErrorHandler.ServerError(error);
+    }
+  }
   async getTransactionUsrIdAndTanggal(param) {
     try {
       var response = await query.getTransaksiByUserIdAndTanggal(param);

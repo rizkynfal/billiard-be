@@ -141,7 +141,7 @@ class ProdukQueryHandler {
 
     try {
       var response = { produk: "", jamAvail: [] };
-      const transaksiData = await transaksiHandler.query.getTransactionTglPRid(
+      const transaksiData = await transaksiHandler.query.getBookedProduk(
         param
       );
 

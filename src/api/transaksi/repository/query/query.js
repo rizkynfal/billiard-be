@@ -15,6 +15,12 @@ class TransaksiQuery {
     const res = await pg.dbQuery(query);
     return res;
   }
+  async getTransaksiByProdukIdAndTanggalBookJoin(data) {
+    const query = `SELECT b.product_id, b.nama, b.harga, b.deskripsi, (produk::json->'jamMain')::varchar as booked FROM transaksi_tb a JOIN product_tb b ON '${data.produkId}' = SPLIT_PART((a.produk::json->'produk_id')::varchar, '"', 2) AND b.product_id = '${data.produkId}' JOIN booking_tb c ON a.transaksi_id = c.transaksi_id  AND a.tanggal_transaksi = '${data.tanggal}'`;
+
+    const res = await pg.dbQuery(query);
+    return res;
+  }
   async getTransaksiByUserIdAndTanggal(data) {
     const query = `SELECT a.transaksi_id,a.user_id,a.tanggal_transaksi,a.jam_transaksi, a.status_transaksi, a.total_lama_sewa, a.total_harga,a.produk, a.nama_penyewa, a.no_hp, b.product_id,b.nama as nama_meja, b.foto_product
     FROM transaksi_tb a JOIN product_tb b ON b.product_id = SPLIT_PART((a.produk::json->'produk_id')::varchar, '"', 2) AND a.user_id = '${data.userId}' AND a.tanggal_transaksi = '${data.tanggal}'`;
