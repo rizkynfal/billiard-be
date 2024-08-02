@@ -89,7 +89,7 @@ module.exports = (app) => {
     }
   });
 
-  app.get("/v1/product/getPhotoById",  async (req, res) => {
+  app.get("/v1/product/getPhotoById", async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getPhotoById(
         req.query
@@ -105,25 +105,22 @@ module.exports = (app) => {
       util.handleError(req, res, error);
     }
   });
-  app.get(
-    "/v1/product/getProdukJamAvailable",
-
-    async (req, res) => {
-      try {
-        var response =
-          await apiHandler.produkHandler.query.getProdukJamAvailable(req.body);
-        util.response(
-          res,
-          response,
-          "Successfully",
-          apiConstants.RESPONSE_CODES.OK,
-          true
-        );
-      } catch (error) {
-        util.handleError(req, res, error);
-      }
+  app.post("/v1/product/getProdukJamAvailable", async (req, res) => {
+    try {
+      var response = await apiHandler.produkHandler.query.getProdukJamAvailable(
+        req.body
+      );
+      util.response(
+        res,
+        response,
+        "Successfully",
+        apiConstants.RESPONSE_CODES.OK,
+        true
+      );
+    } catch (error) {
+      util.handleError(req, res, error);
     }
-  );
+  });
   app.get(
     "/v1/product/getAllAvailable",
 
