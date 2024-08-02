@@ -74,7 +74,7 @@ module.exports = (app) => {
     }
   );
   //
-  app.get("/v1/product/getAllPhoto", authenticateToken, async (req, res) => {
+  app.get("/v1/product/getAllPhoto", async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getPhoto();
       util.response(
@@ -89,7 +89,7 @@ module.exports = (app) => {
     }
   });
 
-  app.get("/v1/product/getPhotoById", authenticateToken, async (req, res) => {
+  app.get("/v1/product/getPhotoById",  async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getPhotoById(
         req.query
@@ -107,7 +107,7 @@ module.exports = (app) => {
   });
   app.get(
     "/v1/product/getProdukJamAvailable",
-    authenticateToken,
+
     async (req, res) => {
       try {
         var response =
@@ -126,7 +126,7 @@ module.exports = (app) => {
   );
   app.get(
     "/v1/product/getAllAvailable",
-    authenticateToken,
+
     async (req, res) => {
       try {
         var response =
@@ -145,7 +145,7 @@ module.exports = (app) => {
       }
     }
   );
-  app.get("/v1/product/getAll", authenticateToken, async (req, res) => {
+  app.get("/v1/product/getAll", async (req, res) => {
     try {
       var response = await apiHandler.produkHandler.query.getAll(req.body);
       util.response(
