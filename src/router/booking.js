@@ -1,7 +1,7 @@
 const { util, apiConstants } = require("../utils/index");
 const bodyParser = require("body-parser");
 const {
-  authenticateTokenAdmin: authenticateToken,
+  authenticateToken,
   authenticateTokenAdmin,
 } = require("../middleware/authentication");
 const { apiHandler } = require("../api/api_handler");

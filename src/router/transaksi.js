@@ -2,7 +2,8 @@ const { util, apiConstants } = require("../utils/index");
 const { ErrorHandler } = require("../handler/error");
 const bodyParser = require("body-parser");
 const {
-  authenticateTokenAdmin: authenticateToken,
+  authenticateTokenAdmin,
+  authenticateToken,
   authenticateTokenCustomer,
 } = require("../middleware/authentication");
 const { apiHandler } = require("../api/api_handler");
@@ -29,7 +30,7 @@ module.exports = (app) => {
   // get endpoint
   app.get(
     "/v1/transaksi/getTransaksiList",
-    authenticateToken,
+    authenticateTokenAdmin,
     async (req, res) => {
       try {
         var response = await apiHandler.transaksiHandler.query.getTransaksiList(
