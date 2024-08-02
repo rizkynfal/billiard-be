@@ -126,7 +126,7 @@ class TransaksiCommandHandler {
               clearInterval(interval);
               throw new ErrorHandler.ServerError(e);
             });
-        }, 20000);
+        }, 30000);
       });
 
       return {
