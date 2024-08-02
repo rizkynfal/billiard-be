@@ -14,13 +14,14 @@ exports.authenticateToken = (req, res, next) => {
       if (token == null) throw new ErrorHandler.UnauthorizedError();
 
       jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
-        console.log(user.user.role)
         if (err) {
           throw new ErrorHandler.UnauthorizedError(err);
         } else if (
-         !( user.user.role === 1 ||
-          user.user.role === 2 ||
-          user.user.role === 3)
+          !(
+            user.user.role === 1 ||
+            user.user.role === 2 ||
+            user.user.role === 3
+          )
         ) {
           throw new ErrorHandler.ForbiddenError("Access Denied");
         } else {
@@ -47,7 +48,7 @@ exports.authenticateTokenAdmin = (req, res, next) => {
     jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
       if (err) {
         util.handleError(req, res, new ErrorHandler.UnauthorizedError(err));
-      } else if (user.user.role === 1 || user.user.role === 2) {
+      } else if (!(user.user.role === 1 || user.user.role === 2)) {
         util.handleError(
           req,
           res,
@@ -74,10 +75,13 @@ exports.authenticateTokenCustomer = (req, res, next) => {
       jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
         if (err) {
           throw new ErrorHandler.UnauthorizedError(err);
-        } else if (user.user.role === 1 || user.user.role === 3) {
-          throw new ErrorHandler.ForbiddenError("Access denied");
+        } else if (!(user.user.role === 1 || user.user.role === 3)) {
+          throw new ErrorHandler.ForbiddenError(
+            "Access denied for this user role"
+          );
+        } else {
+          next();
         }
-        next();
       });
     }
   } catch (error) {
