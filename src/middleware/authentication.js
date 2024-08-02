@@ -14,12 +14,13 @@ exports.authenticateToken = (req, res, next) => {
       if (token == null) throw new ErrorHandler.UnauthorizedError();
 
       jwt.verify(token, apiConstants.TOKEN_SECRET.ACCESS_TOKEN, (err, user) => {
+        console.log(user.user.role)
         if (err) {
           throw new ErrorHandler.UnauthorizedError(err);
         } else if (
-          user.user.role === 1 ||
+         !( user.user.role === 1 ||
           user.user.role === 2 ||
-          user.user.role === 3
+          user.user.role === 3)
         ) {
           throw new ErrorHandler.ForbiddenError("Access Denied");
         } else {
