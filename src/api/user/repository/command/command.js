@@ -10,12 +10,12 @@ class UserCommand {
     return res;
   }
   async userResetPass(data) {
-    const query = `UPDATE user_tb SET password = '${data.newPassword}', otp = '', otp_expired=null WHERE email = '${data.email}' `;
+    const query = `SET datestyle = dmy;UPDATE user_tb SET password = '${data.newPassword}', otp = '', otp_expired=null WHERE email = '${data.email}' `;
     const res = await pg.dbQuery(query);
     return res;
   }
   async userUpdateOTP(data) {
-    const query = `UPDATE user_tb SET otp = '${data.otp}', otp_expired = '${data.otpExpire}' WHERE user_id = '${data.userId}'`;
+    const query = `SET datestyle = dmy;UPDATE user_tb SET otp = '${data.otp}', otp_expired = '${data.otpExpire}' WHERE user_id = '${data.userId}'`;
     const res = await pg.dbQuery(query);
     return res;
   }

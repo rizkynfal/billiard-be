@@ -99,7 +99,7 @@ class Auth {
       await commandHandler.userUpdateOTP({
         user_id: user[0].user_id,
         otp: otp,
-        otpExpired: otpExpired,
+        otpExpired: util.formattedDate(otpExpired),
       });
 
       const transporter = nodemailer.createTransport({
