@@ -48,8 +48,8 @@ class UserCommandHandler {
           email: email,
         };
         var response = await command.userResetPass(data);
-        if (response.rowCount < 1) {
-          throw new errorHandler.ServerError("Internal Server Error");
+        if (!response) {
+          throw new errorHandler.ServerError("Failed to reset pass");
         }
         return { email: email };
       } catch (error) {
