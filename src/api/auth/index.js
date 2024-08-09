@@ -74,10 +74,12 @@ class Auth {
 
     var user = await queryHandler.findUserByEmail(req.body);
 
-    if (!otp || user[0].otp != otp || Date(user[0].otp_expired) < Date.now()) {
+    if (!otp || user[0].otp != otp) {
       throw new ErrorHandler.BadRequestError("OTP Invalid");
     }
-
+    if (Date(user[0].otp_expired) < Date.now()) {
+      throw new ErrorHandler.BadRequestError("OTP Invalid");
+    }
     try {
       var response = await commandHandler.userResetPassword(req.body);
       return response;
