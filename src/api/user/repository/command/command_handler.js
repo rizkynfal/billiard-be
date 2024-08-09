@@ -43,8 +43,9 @@ class UserCommandHandler {
       throw new errorHandler.BadRequestError(error);
     } else {
       try {
+        const hashedPassword = await util.hashPassword(body.password);
         const data = {
-          newPassword: newPassword,
+          newPassword: hashedPassword,
           email: email,
         };
         var response = await command.userResetPass(data);

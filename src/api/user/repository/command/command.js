@@ -10,7 +10,7 @@ class UserCommand {
     return res;
   }
   async userResetPass(data) {
-    const query = `SET datestyle = dmy;UPDATE user_tb SET password = '${data.newPassword}', otp = '', otp_expired=null WHERE email = '${data.email}' `;
+    const query = `UPDATE user_tb SET password = '${data.newPassword}', otp = '', otp_expired='' WHERE email = '${data.email}' `;
     const res = await pg.dbQuery(query);
     return res;
   }
